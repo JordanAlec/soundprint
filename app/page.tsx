@@ -20,7 +20,7 @@ export default function Home() {
             Status
           </p>
 
-          <Link href="/profile/eyJuYW1lIjoiSm9yZGFuQWxlYyJ9" className="text-accent underline underline-offset-2">
+          <Link href="/profile/WyJKb3JkYW5BbGVjIixbXV0" className="text-accent underline underline-offset-2">
               See a decoded sample profile
           </Link>
 
