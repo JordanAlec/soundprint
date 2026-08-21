@@ -3,10 +3,7 @@
 import { useState, type SubmitEvent } from "react";
 import { EMPTY_PROFILE, type MusicProfile } from "@/lib/profile/schema";
 import ImportFromLink from "./import-from-link";
-
-const labelClass = "font-mono text-xs uppercase tracking-widest text-ink-muted";
-const inputClass =
-  "w-full rounded-sm border border-border bg-canvas px-3 py-2 text-sm text-ink outline-none focus:border-accent";
+import { labelClass, inputClass } from "./form-styles";
 
 interface Props {
   onSubmit: (profile: MusicProfile) => void;
