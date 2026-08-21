@@ -21,6 +21,12 @@ export const skillLevelSchema = z.enum(skillLevels);
 
 export type SkillLevel = z.infer<typeof skillLevelSchema>;
 
+export const profileThemes = ["studio", "sunburst", "neon"] as const;
+
+export const profileThemeSchema = z.enum(profileThemes);
+
+export type ProfileTheme = z.infer<typeof profileThemeSchema>;
+
 export const NAME_MAX_LENGTH = 100;
 export const INSTRUMENT_MAX_LENGTH = 50;
 
@@ -43,6 +49,7 @@ export const EMPTY_INSTRUMENT: Instrument = {
 export const musicProfileSchema = z.object({
   name: z.string().max(NAME_MAX_LENGTH),
   instruments: z.array(instrumentSchema),
+  theme: profileThemeSchema,
 });
 
 export type MusicProfile = z.infer<typeof musicProfileSchema>;
@@ -50,4 +57,5 @@ export type MusicProfile = z.infer<typeof musicProfileSchema>;
 export const EMPTY_PROFILE: MusicProfile = {
   name: "",
   instruments: [],
+  theme: profileThemes[0],
 };

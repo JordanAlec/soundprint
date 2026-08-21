@@ -1,17 +1,16 @@
 // Uses atob/btoa (not Buffer) since encode runs client-side and decode
 // runs server-side — both are available in each.
 
-import { musicProfileSchema, skillLevels, type MusicProfile } from "./schema";
+import { musicProfileSchema, profileThemes, skillLevels, type MusicProfile } from "./schema";
 
 export type DecodeResult =
   | { ok: true; data: MusicProfile }
   | { ok: false; error: string };
 
-// Positional array format, skillLevel as an index — much smaller than
-// keyed JSON. playedSince is truncated to year-month here and padded back
-// to day 01 in fromWire.
+// playedSince is truncated to year-month here and padded back to day 01
+// in fromWire.
 type WireInstrument = [instrument: string, playedSince: string, skillLevel: number];
-type WireProfile = [name: string, instruments: WireInstrument[]];
+type WireProfile = [name: string, instruments: WireInstrument[], theme: number];
 
 function toWire(data: MusicProfile): WireProfile {
   return [
@@ -21,6 +20,7 @@ function toWire(data: MusicProfile): WireProfile {
       instrument.playedSince.slice(0, 7),
       skillLevels.indexOf(instrument.skillLevel),
     ]),
+    profileThemes.indexOf(data.theme),
   ];
 }
 
@@ -29,7 +29,7 @@ function fromWire(value: unknown): unknown {
     return value;
   }
 
-  const [name, instruments] = value as WireProfile;
+  const [name, instruments, themeIndex] = value as WireProfile;
   return {
     name,
     instruments: (instruments ?? []).map(([instrument, yearMonth, skillIndex]) => ({
@@ -37,6 +37,7 @@ function fromWire(value: unknown): unknown {
       playedSince: `${yearMonth}-01`,
       skillLevel: skillLevels[skillIndex],
     })),
+    theme: profileThemes[themeIndex],
   };
 }
 

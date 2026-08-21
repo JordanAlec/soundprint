@@ -1,5 +1,5 @@
+import type { ReactNode } from "react";
 import { Oswald, Inter, JetBrains_Mono } from "next/font/google";
-import SoundPrintTheme from "@/components/theme/soundprint-theme";
 import "./globals.css";
 export { metadata } from "@/lib/web/metadata";
 
@@ -21,17 +21,13 @@ const monoFont = JetBrains_Mono({
   display: "swap",
 });
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
       className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}
     >
-      <body>
-        <SoundPrintTheme>
-          {children}
-        </SoundPrintTheme>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

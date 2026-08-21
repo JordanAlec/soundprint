@@ -5,6 +5,7 @@ import { EMPTY_INSTRUMENT, EMPTY_PROFILE, type Instrument, type MusicProfile } f
 import ImportFromLink from "./import-from-link";
 import NameField from "./name-field";
 import InstrumentsField from "./instruments-field";
+import ThemeField from "./theme-field";
 
 interface Props {
   onSubmit: (profile: MusicProfile) => void;
@@ -56,6 +57,11 @@ export default function ProfileForm({ onSubmit }: Props) {
           onAdd={addInstrument}
           onChange={updateInstrument}
           onRemove={removeInstrument}
+        />
+
+        <ThemeField
+          value={profile.theme}
+          onChange={(theme) => setProfile({ ...profile, theme })}
         />
 
         <button

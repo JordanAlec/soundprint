@@ -1,6 +1,16 @@
 import PanelRidge from "@/components/layout/panel-ridge";
 import SubHeaderSection from "@/components/layout/sub-header-section";
 import Link from "next/link";
+import { encodeProfileToken } from "@/lib/profile/token";
+
+const sampleProfileToken = encodeProfileToken({
+  name: "Jordan Alec",
+  instruments: [
+    { instrument: "Piano", playedSince: "2026-08-01", skillLevel: "Beginner" },
+    { instrument: "Bass", playedSince: "2026-08-01", skillLevel: "Beginner" },
+  ],
+  theme: "studio",
+});
 
 export default function Home() {
   return (
@@ -20,7 +30,7 @@ export default function Home() {
             Status
           </p>
 
-          <Link href="/profile/WyJKb3JkYW5BbGVjIixbXV0" className="text-accent underline underline-offset-2">
+          <Link href={`/profile/${sampleProfileToken}`} className="text-accent underline underline-offset-2">
               See a decoded sample profile
           </Link>
 

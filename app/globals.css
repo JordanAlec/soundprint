@@ -7,6 +7,7 @@
   --color-ink: #ece9e2;
   --color-ink-muted: #9c9890;
   --color-accent: #e0a340;
+  --color-accent-2: #4fb0a8;
   --color-accent-ink: #17181a;
   --color-border: #2d2e31;
 
@@ -15,6 +16,32 @@
   --font-mono: var(--font-mono-raw), ui-monospace, "SF Mono", monospace;
 
   --radius-card: 0.375rem;
+}
+
+/* Overridden per [data-theme] ancestor; no component needs to know which
+   theme is active since utilities like bg-canvas resolve these at paint time. */
+[data-theme="sunburst"] {
+  --color-canvas: #f5efe1;
+  --color-surface: #fffdf8;
+  --color-surface-hover: #ede4d0;
+  --color-ink: #2b2117;
+  --color-ink-muted: #7a6f5c;
+  --color-accent: #c1522a;
+  --color-accent-2: #7a8f4a;
+  --color-accent-ink: #fdf6ec;
+  --color-border: #d9cbae;
+}
+
+[data-theme="neon"] {
+  --color-canvas: #0b0f2e;
+  --color-surface: #12173f;
+  --color-surface-hover: #1b2154;
+  --color-ink: #eef0ff;
+  --color-ink-muted: #9099d6;
+  --color-accent: #ff3ea5;
+  --color-accent-2: #28e0ff;
+  --color-accent-ink: #0b0f2e;
+  --color-border: #2c3470;
 }
 
 .tape-ruler {
