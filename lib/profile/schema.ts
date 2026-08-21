@@ -1,15 +1,11 @@
-export interface MusicProfile {
-  name: string;
-}
+import { z } from "zod";
+
+export const musicProfileSchema = z.object({
+  name: z.string(),
+});
+
+export type MusicProfile = z.infer<typeof musicProfileSchema>;
 
 export const EMPTY_PROFILE: MusicProfile = {
   name: "",
 };
-
-export function isMusicProfile(value: unknown): value is MusicProfile {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    typeof (value as MusicProfile).name === "string"
-  );
-}

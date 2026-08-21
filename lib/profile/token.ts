@@ -1,7 +1,7 @@
 // Uses atob/btoa (not Buffer) since encode runs client-side and decode
 // runs server-side — both are available in each.
 
-import { isMusicProfile, type MusicProfile } from "./schema";
+import { musicProfileSchema, type MusicProfile } from "./schema";
 
 export type DecodeResult =
   | { ok: true; data: MusicProfile }
@@ -58,9 +58,10 @@ export function decodeProfileToken(token: string): DecodeResult {
     return { ok: false, error: "This link's data is corrupted or incomplete." };
   }
 
-  if (!isMusicProfile(data)) {
+  const parsed = musicProfileSchema.safeParse(data);
+  if (!parsed.success) {
     return { ok: false, error: "This link's data is corrupted or incomplete." };
   }
 
-  return { ok: true, data };
+  return { ok: true, data: parsed.data };
 }
