@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, type SubmitEvent } from "react";
-import { EMPTY_PROFILE, type MusicProfile } from "@/lib/profile/schema";
+import { EMPTY_INSTRUMENT, EMPTY_PROFILE, type Instrument, type MusicProfile } from "@/lib/profile/schema";
 import ImportFromLink from "./import-from-link";
-import { labelClass, inputClass } from "./form-styles";
+import NameField from "./name-field";
+import InstrumentsField from "./instruments-field";
 
 interface Props {
   onSubmit: (profile: MusicProfile) => void;
@@ -17,23 +18,45 @@ export default function ProfileForm({ onSubmit }: Props) {
     onSubmit(profile);
   }
 
+  function addInstrument() {
+    setProfile({
+      ...profile,
+      instruments: [...profile.instruments, { ...EMPTY_INSTRUMENT }],
+    });
+  }
+
+  function removeInstrument(index: number) {
+    setProfile({
+      ...profile,
+      instruments: profile.instruments.filter((_, i) => i !== index),
+    });
+  }
+
+  function updateInstrument(index: number, patch: Partial<Instrument>) {
+    setProfile({
+      ...profile,
+      instruments: profile.instruments.map((instrument, i) =>
+        i === index ? { ...instrument, ...patch } : instrument
+      ),
+    });
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <ImportFromLink onImport={setProfile} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <div className="flex flex-col gap-1.5">
-          <label className={labelClass} htmlFor="name">
-            Name
-          </label>
-          <input
-            id="name"
-            required
-            className={inputClass}
-            value={profile.name}
-            onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-          />
-        </div>
+        <NameField
+          value={profile.name}
+          onChange={(name) => setProfile({ ...profile, name })}
+        />
+
+        <InstrumentsField
+          instruments={profile.instruments}
+          onAdd={addInstrument}
+          onChange={updateInstrument}
+          onRemove={removeInstrument}
+        />
 
         <button
           type="submit"
