@@ -1,11 +1,45 @@
 // Uses atob/btoa (not Buffer) since encode runs client-side and decode
 // runs server-side — both are available in each.
 
-import { musicProfileSchema, type MusicProfile } from "./schema";
+import { musicProfileSchema, profileThemes, skillLevels, type MusicProfile } from "./schema";
 
 export type DecodeResult =
   | { ok: true; data: MusicProfile }
   | { ok: false; error: string };
+
+// playedSince is truncated to year-month here and padded back to day 01
+// in fromWire.
+type WireInstrument = [instrument: string, playedSince: string, skillLevel: number];
+type WireProfile = [name: string, instruments: WireInstrument[], theme: number];
+
+function toWire(data: MusicProfile): WireProfile {
+  return [
+    data.name,
+    data.instruments.map((instrument) => [
+      instrument.instrument,
+      instrument.playedSince.slice(0, 7),
+      skillLevels.indexOf(instrument.skillLevel),
+    ]),
+    profileThemes.indexOf(data.theme),
+  ];
+}
+
+function fromWire(value: unknown): unknown {
+  if (!Array.isArray(value)) {
+    return value;
+  }
+
+  const [name, instruments, themeIndex] = value as WireProfile;
+  return {
+    name,
+    instruments: (instruments ?? []).map(([instrument, yearMonth, skillIndex]) => ({
+      instrument,
+      playedSince: `${yearMonth}-01`,
+      skillLevel: skillLevels[skillIndex],
+    })),
+    theme: profileThemes[themeIndex],
+  };
+}
 
 function toBase64Url(input: string): string {
   const bytes = new TextEncoder().encode(input);
@@ -28,7 +62,7 @@ function fromBase64Url(input: string): string {
 }
 
 export function encodeProfileToken(data: MusicProfile): string {
-  return toBase64Url(JSON.stringify(data));
+  return toBase64Url(JSON.stringify(toWire(data)));
 }
 
 export function extractProfileToken(input: string): string {
@@ -51,14 +85,14 @@ export function decodeProfileToken(token: string): DecodeResult {
     return { ok: false, error: "This link isn't a valid SoundPrint token." };
   }
 
-  let data: unknown;
+  let profile: unknown;
   try {
-    data = JSON.parse(json);
+    profile = fromWire(JSON.parse(json));
   } catch {
     return { ok: false, error: "This link's data is corrupted or incomplete." };
   }
 
-  const parsed = musicProfileSchema.safeParse(data);
+  const parsed = musicProfileSchema.safeParse(profile);
   if (!parsed.success) {
     return { ok: false, error: "This link's data is corrupted or incomplete." };
   }

@@ -1,11 +1,11 @@
 import PanelRidge from "@/components/layout/panel-ridge";
 import SubHeaderSection from "@/components/layout/sub-header-section";
 import RenderProfile from "@/components/profile/render-profile";
-import { decodeProfileToken } from "@/lib/profile/token";
+import { decodeProfileTokenCached } from "@/lib/profile/decode-cached";
 
 export default async function ProfilePage(props: PageProps<"/profile/[token]">) {
   const { token } = await props.params;
-  const result = decodeProfileToken(token);
+  const result = decodeProfileTokenCached(token);
 
   return (
     <div className="flex flex-col gap-8 sm:gap-10">
@@ -17,13 +17,13 @@ export default async function ProfilePage(props: PageProps<"/profile/[token]">) 
       </SubHeaderSection>
 
       <PanelRidge>
-        <div>
+        {!result.ok && (
           <p className="font-mono text-xs uppercase tracking-widest text-ink-muted">
-            {result.ok ? "Decoded data" : "Decode failed"}
+            Decode failed
           </p>
+        )}
 
-          <RenderProfile result={result} />
-        </div>
+        <RenderProfile result={result} />
       </PanelRidge>
 
     </div>
