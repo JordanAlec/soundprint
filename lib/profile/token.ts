@@ -31,6 +31,18 @@ export function encodeProfileToken(data: MusicProfile): string {
   return toBase64Url(JSON.stringify(data));
 }
 
+export function extractProfileToken(input: string): string {
+  const trimmed = input.trim();
+  const marker = "/profile/";
+  const index = trimmed.lastIndexOf(marker);
+
+  if (index === -1) {
+    return trimmed;
+  }
+
+  return trimmed.slice(index + marker.length);
+}
+
 export function decodeProfileToken(token: string): DecodeResult {
   let json: string;
   try {
