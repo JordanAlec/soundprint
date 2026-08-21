@@ -1,7 +1,7 @@
 // Uses atob/btoa (not Buffer) since encode runs client-side and decode
 // runs server-side — both are available in each.
 
-import type { MusicProfile } from "./schema";
+import { musicProfileSchema, type MusicProfile } from "./schema";
 
 export type DecodeResult =
   | { ok: true; data: MusicProfile }
@@ -31,6 +31,18 @@ export function encodeProfileToken(data: MusicProfile): string {
   return toBase64Url(JSON.stringify(data));
 }
 
+export function extractProfileToken(input: string): string {
+  const trimmed = input.trim();
+  const marker = "/profile/";
+  const index = trimmed.lastIndexOf(marker);
+
+  if (index === -1) {
+    return trimmed;
+  }
+
+  return trimmed.slice(index + marker.length);
+}
+
 export function decodeProfileToken(token: string): DecodeResult {
   let json: string;
   try {
@@ -39,9 +51,17 @@ export function decodeProfileToken(token: string): DecodeResult {
     return { ok: false, error: "This link isn't a valid SoundPrint token." };
   }
 
+  let data: unknown;
   try {
-    return { ok: true, data: JSON.parse(json) as MusicProfile };
+    data = JSON.parse(json);
   } catch {
     return { ok: false, error: "This link's data is corrupted or incomplete." };
   }
+
+  const parsed = musicProfileSchema.safeParse(data);
+  if (!parsed.success) {
+    return { ok: false, error: "This link's data is corrupted or incomplete." };
+  }
+
+  return { ok: true, data: parsed.data };
 }
