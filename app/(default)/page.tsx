@@ -2,15 +2,9 @@ import PanelRidge from "@/components/layout/panel-ridge";
 import SubHeaderSection from "@/components/layout/sub-header-section";
 import Link from "next/link";
 import { encodeProfileToken } from "@/lib/profile/token";
+import { SAMPLE_PROFILE } from "@/lib/profile/profile-schema";
 
-const sampleProfileToken = encodeProfileToken({
-  name: "Jordan Alec",
-  instruments: [
-    { instrument: "Piano", playedSince: "2026-08-01", skillLevel: "Beginner" },
-    { instrument: "Bass", playedSince: "2026-08-01", skillLevel: "Beginner" },
-  ],
-  theme: "studio",
-});
+const sampleProfileToken = encodeProfileToken(SAMPLE_PROFILE);
 
 export default function Home() {
   return (

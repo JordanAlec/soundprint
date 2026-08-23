@@ -19,3 +19,33 @@ export const EMPTY_PROFILE: MusicProfile = {
   instruments: [],
   theme: profileThemes[0],
 };
+
+
+export const SAMPLE_PROFILE: MusicProfile = {
+  name: "Jordan Alec",
+  instruments: [
+    { instrument: "Piano",
+      playedSince: "2026-08-01",
+      skillLevel: "Beginner",
+      repertoire: [
+        {
+          genre: 'Jazz',
+          artist: 'Miles Davis Quintet',
+          title: 'If I Were A Bell'
+        }
+      ]
+    },
+    { instrument: "Bass",
+      playedSince: "2026-08-01",
+      skillLevel: "Beginner",
+      repertoire: [
+        {
+          genre: 'Jazz',
+          artist: 'Cannonball Adderley',
+          title: 'Autumn Leaves'
+        }
+      ]
+    },
+  ],
+  theme: "studio",
+}

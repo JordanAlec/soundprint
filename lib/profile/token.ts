@@ -1,29 +1,114 @@
 // Uses atob/btoa (not Buffer) since encode runs client-side and decode
 // runs server-side — both are available in each.
 
-import { skillLevels } from './skill/skill-schema';
-import { profileThemes } from './theme/theme-schema';
-
 import { musicProfileSchema, type MusicProfile } from "./profile-schema";
 
 export type DecodeResult =
   | { ok: true; data: MusicProfile }
   | { ok: false; error: string };
 
-// playedSince is truncated to year-month here and padded back to day 01 in fromWire.
-type WireInstrument = [instrument: string, playedSince: string, skillLevel: number];
-type WireProfile = [name: string, instruments: WireInstrument[], theme: number];
+// Compacts musicProfileSchema into positional tuples (no key names, enums as
+// indices) by walking the zod schema itself, so new/removed fields need no
+// change here. Lossy domain compaction (e.g. date truncation) isn't derivable
+// from structure — tag the field with `.meta({ wireCompact: "<name>" })` and
+// register it once in NAMED_TRANSFORMS.
+//
+// Reordering existing fields reshuffles tuple positions and corrupts
+// already-issued tokens — append, don't reorder.
 
-function toWire(data: MusicProfile): WireProfile {
-  return [
-    data.name,
-    data.instruments.map((instrument) => [
-      instrument.instrument,
-      instrument.playedSince.slice(0, 7),
-      skillLevels.indexOf(instrument.skillLevel),
-    ]),
-    profileThemes.indexOf(data.theme),
-  ];
+type Codec = {
+  encode: (value: unknown) => unknown;
+  decode: (value: unknown) => unknown;
+};
+
+// The subset of zod's introspection surface this file reads.
+export type IntrospectableSchema = {
+  meta(): { wireCompact?: string } | undefined;
+  def: {
+    type: string;
+    element?: IntrospectableSchema;
+    innerType?: IntrospectableSchema;
+  };
+  shape?: Record<string, IntrospectableSchema>;
+  options?: unknown[];
+};
+
+const NAMED_TRANSFORMS: Record<string, Codec> = {
+  yearMonthDate: {
+    encode: (value) => (value as string).slice(0, 7),
+    decode: (value) => `${value as string}-01`,
+  },
+};
+
+// Exported for tests, so this can be checked against schemas it's never seen.
+export function codecFor(schema: IntrospectableSchema): Codec {
+  const meta = schema.meta();
+  if (meta?.wireCompact) {
+    const transform = NAMED_TRANSFORMS[meta.wireCompact];
+    if (!transform) {
+      throw new Error(`no wire transform registered for "${meta.wireCompact}"`);
+    }
+    return transform;
+  }
+
+  const def = schema.def;
+
+  switch (def.type) {
+    case "object": {
+      const shape = schema.shape ?? {};
+      const keys = Object.keys(shape);
+      const fieldCodecs = keys.map((key) => codecFor(shape[key]));
+
+      return {
+        encode: (value) => {
+          const obj = value as Record<string, unknown>;
+          return keys.map((key, i) => fieldCodecs[i].encode(obj[key]));
+        },
+        decode: (value) => {
+          const tuple = value as unknown[];
+          const obj: Record<string, unknown> = {};
+          keys.forEach((key, i) => {
+            obj[key] = fieldCodecs[i].decode(tuple[i]);
+          });
+          return obj;
+        },
+      };
+    }
+
+    case "array": {
+      const elementCodec = codecFor(def.element!);
+      return {
+        encode: (value) => (value as unknown[]).map((item) => elementCodec.encode(item)),
+        decode: (value) => (value as unknown[]).map((item) => elementCodec.decode(item)),
+      };
+    }
+
+    case "enum": {
+      const options = schema.options ?? [];
+      return {
+        encode: (value) => options.indexOf(value),
+        decode: (value) => options[value as number],
+      };
+    }
+
+    case "optional":
+    case "nullable": {
+      const inner = codecFor(def.innerType!);
+      return {
+        encode: (value) => (value === undefined || value === null ? value : inner.encode(value)),
+        decode: (value) => (value === undefined || value === null ? value : inner.decode(value)),
+      };
+    }
+
+    default:
+      return { encode: (value) => value, decode: (value) => value };
+  }
+}
+
+const profileCodec = codecFor(musicProfileSchema as unknown as IntrospectableSchema);
+
+function toWire(data: MusicProfile): unknown {
+  return profileCodec.encode(data);
 }
 
 function fromWire(value: unknown): unknown {
@@ -31,16 +116,7 @@ function fromWire(value: unknown): unknown {
     return value;
   }
 
-  const [name, instruments, themeIndex] = value as WireProfile;
-  return {
-    name,
-    instruments: (instruments ?? []).map(([instrument, yearMonth, skillIndex]) => ({
-      instrument,
-      playedSince: `${yearMonth}-01`,
-      skillLevel: skillLevels[skillIndex],
-    })),
-    theme: profileThemes[themeIndex],
-  };
+  return profileCodec.decode(value);
 }
 
 function toBase64Url(input: string): string {
