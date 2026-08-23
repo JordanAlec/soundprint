@@ -4,9 +4,11 @@ import {
 } from '@/lib/profile/instrument/instrument-schema';
 
 import { skillLevels } from '@/lib/profile/skill/skill-schema';
+import { type Repertoire, EMPTY_REPERTOIRE } from '@/lib/profile/repertoire/repertoire-schema';
 
 import { todayIsoDate } from '@/utils/date-utils'
 import { labelClass, inputClass } from "./form-styles";
+import RepertoireField from "./repertoire-field";
 
 interface Props {
   instrument: Instrument;
@@ -16,6 +18,22 @@ interface Props {
 }
 
 export default function InstrumentRow({ instrument, index, onChange, onRemove }: Props) {
+  function addRepertoire() {
+    onChange({ repertoire: [...instrument.repertoire, { ...EMPTY_REPERTOIRE }] });
+  }
+
+  function removeRepertoire(repertoireIndex: number) {
+    onChange({ repertoire: instrument.repertoire.filter((_, i) => i !== repertoireIndex) });
+  }
+
+  function updateRepertoire(repertoireIndex: number, patch: Partial<Repertoire>) {
+    onChange({
+      repertoire: instrument.repertoire.map((item, i) =>
+        i === repertoireIndex ? { ...item, ...patch } : item
+      ),
+    });
+  }
+
   return (
     <div className="flex flex-col gap-3 rounded-sm border border-border p-4">
       <div className="flex flex-col gap-1.5">
@@ -71,6 +89,14 @@ export default function InstrumentRow({ instrument, index, onChange, onRemove }:
           ))}
         </select>
       </div>
+
+      <RepertoireField
+        repertoire={instrument.repertoire}
+        idPrefix={`repertoire-${index}`}
+        onAdd={addRepertoire}
+        onChange={updateRepertoire}
+        onRemove={removeRepertoire}
+      />
 
       <button
         type="button"

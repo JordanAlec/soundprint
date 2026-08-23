@@ -14,3 +14,9 @@ export const repertoireSchema = z.object({
 });
 
 export type Repertoire = z.infer<typeof repertoireSchema>;
+
+export const EMPTY_REPERTOIRE: Repertoire = {
+  genre: "",
+  artist: "",
+  title: "",
+};
