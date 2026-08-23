@@ -3,6 +3,8 @@ import { z } from "zod";
 import { instrumentSchema } from './instrument/instrument-schema';
 import { profileThemes, profileThemeSchema } from './theme/theme-schema';
 import { qualificationSchema, QUALIFICATION_MAX_ITEMS } from './qualification/qualification-schema';
+import { highlightSchema, HIGHLIGHT_MAX_ITEMS } from './highlight/highlight-schema';
+import { bandSchema, BAND_MAX_ITEMS } from './band/band-schema';
 
 export const NAME_MAX_LENGTH = 100;
 
@@ -11,8 +13,11 @@ export const musicProfileSchema = z.object({
   name: z.string().max(NAME_MAX_LENGTH),
   instruments: z.array(instrumentSchema),
   theme: profileThemeSchema,
-  // Optional so links issued before this field existed still decode.
+  // Below are all optional, so links issued before they existed still decode.
   qualifications: z.array(qualificationSchema).max(QUALIFICATION_MAX_ITEMS).optional(),
+  highlights: z.array(highlightSchema).max(HIGHLIGHT_MAX_ITEMS).optional(),
+  bands: z.array(bandSchema).max(BAND_MAX_ITEMS).optional(),
+  lookingForBand: z.boolean().optional(),
 });
 
 export type MusicProfile = z.infer<typeof musicProfileSchema>;
@@ -22,6 +27,9 @@ export const EMPTY_PROFILE: MusicProfile = {
   instruments: [],
   theme: profileThemes[0],
   qualifications: [],
+  highlights: [],
+  bands: [],
+  lookingForBand: false,
 };
 
 
@@ -72,4 +80,13 @@ export const SAMPLE_PROFILE: MusicProfile = {
       year: "2024",
     },
   ],
+  highlights: [
+    "Supported a UK jazz festival headline set, 2023",
+    "Session bassist on two independent EP releases",
+  ],
+  bands: [
+    { name: "The Midnight Set", from: "2023-01-01", position: "Bass" },
+    { name: "Backline", from: "2018-01-01", to: "2021-06-01", position: "Piano" },
+  ],
+  lookingForBand: true,
 }

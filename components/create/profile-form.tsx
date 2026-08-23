@@ -1,13 +1,18 @@
 "use client";
 
 import { useState, type SubmitEvent } from "react";
-import { type Instrument, EMPTY_INSTRUMENT } from '@/lib/profile/instrument/instrument-schema';
-import { type Qualification, EMPTY_QUALIFICATION } from '@/lib/profile/qualification/qualification-schema';
+import { EMPTY_INSTRUMENT } from '@/lib/profile/instrument/instrument-schema';
+import { EMPTY_QUALIFICATION } from '@/lib/profile/qualification/qualification-schema';
+import { EMPTY_BAND } from '@/lib/profile/band/band-schema';
 import { EMPTY_PROFILE, type MusicProfile } from "@/lib/profile/profile-schema";
+import { useListField } from "./use-list-field";
 import ImportFromLink from "./import-from-link";
 import NameField from "./name-field";
 import InstrumentsField from "./instruments-field";
+import BandsField from "./bands-field";
+import LookingForBandField from "./looking-for-band-field";
 import QualificationsField from "./qualifications-field";
+import HighlightsField from "./highlights-field";
 import ThemeField from "./theme-field";
 
 interface Props {
@@ -17,55 +22,20 @@ interface Props {
 export default function ProfileForm({ onSubmit }: Props) {
   const [profile, setProfile] = useState<MusicProfile>(EMPTY_PROFILE);
 
+  const instruments = useListField(profile.instruments, (instruments) =>
+    setProfile({ ...profile, instruments })
+  );
+  const bands = useListField(profile.bands ?? [], (bands) => setProfile({ ...profile, bands }));
+  const qualifications = useListField(profile.qualifications ?? [], (qualifications) =>
+    setProfile({ ...profile, qualifications })
+  );
+  const highlights = useListField(profile.highlights ?? [], (highlights) =>
+    setProfile({ ...profile, highlights })
+  );
+
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     onSubmit(profile);
-  }
-
-  function addInstrument() {
-    setProfile({
-      ...profile,
-      instruments: [...profile.instruments, { ...EMPTY_INSTRUMENT }],
-    });
-  }
-
-  function removeInstrument(index: number) {
-    setProfile({
-      ...profile,
-      instruments: profile.instruments.filter((_, i) => i !== index),
-    });
-  }
-
-  function updateInstrument(index: number, patch: Partial<Instrument>) {
-    setProfile({
-      ...profile,
-      instruments: profile.instruments.map((instrument, i) =>
-        i === index ? { ...instrument, ...patch } : instrument
-      ),
-    });
-  }
-
-  function addQualification() {
-    setProfile({
-      ...profile,
-      qualifications: [...(profile.qualifications ?? []), { ...EMPTY_QUALIFICATION }],
-    });
-  }
-
-  function removeQualification(index: number) {
-    setProfile({
-      ...profile,
-      qualifications: (profile.qualifications ?? []).filter((_, i) => i !== index),
-    });
-  }
-
-  function updateQualification(index: number, patch: Partial<Qualification>) {
-    setProfile({
-      ...profile,
-      qualifications: (profile.qualifications ?? []).map((qualification, i) =>
-        i === index ? { ...qualification, ...patch } : qualification
-      ),
-    });
   }
 
   return (
@@ -80,16 +50,35 @@ export default function ProfileForm({ onSubmit }: Props) {
 
         <InstrumentsField
           instruments={profile.instruments}
-          onAdd={addInstrument}
-          onChange={updateInstrument}
-          onRemove={removeInstrument}
+          onAdd={() => instruments.add({ ...EMPTY_INSTRUMENT })}
+          onChange={(index, patch) => instruments.update(index, (item) => ({ ...item, ...patch }))}
+          onRemove={instruments.remove}
+        />
+
+        <BandsField
+          bands={profile.bands ?? []}
+          onAdd={() => bands.add({ ...EMPTY_BAND })}
+          onChange={(index, patch) => bands.update(index, (item) => ({ ...item, ...patch }))}
+          onRemove={bands.remove}
+        />
+
+        <LookingForBandField
+          value={profile.lookingForBand ?? false}
+          onChange={(lookingForBand) => setProfile({ ...profile, lookingForBand })}
         />
 
         <QualificationsField
           qualifications={profile.qualifications ?? []}
-          onAdd={addQualification}
-          onChange={updateQualification}
-          onRemove={removeQualification}
+          onAdd={() => qualifications.add({ ...EMPTY_QUALIFICATION })}
+          onChange={(index, patch) => qualifications.update(index, (item) => ({ ...item, ...patch }))}
+          onRemove={qualifications.remove}
+        />
+
+        <HighlightsField
+          highlights={profile.highlights ?? []}
+          onAdd={() => highlights.add("")}
+          onChange={(index, value) => highlights.update(index, () => value)}
+          onRemove={highlights.remove}
         />
 
         <ThemeField
