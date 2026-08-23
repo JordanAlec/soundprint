@@ -2,10 +2,12 @@
 
 import { useState, type SubmitEvent } from "react";
 import { type Instrument, EMPTY_INSTRUMENT } from '@/lib/profile/instrument/instrument-schema';
+import { type Qualification, EMPTY_QUALIFICATION } from '@/lib/profile/qualification/qualification-schema';
 import { EMPTY_PROFILE, type MusicProfile } from "@/lib/profile/profile-schema";
 import ImportFromLink from "./import-from-link";
 import NameField from "./name-field";
 import InstrumentsField from "./instruments-field";
+import QualificationsField from "./qualifications-field";
 import ThemeField from "./theme-field";
 
 interface Props {
@@ -43,6 +45,29 @@ export default function ProfileForm({ onSubmit }: Props) {
     });
   }
 
+  function addQualification() {
+    setProfile({
+      ...profile,
+      qualifications: [...(profile.qualifications ?? []), { ...EMPTY_QUALIFICATION }],
+    });
+  }
+
+  function removeQualification(index: number) {
+    setProfile({
+      ...profile,
+      qualifications: (profile.qualifications ?? []).filter((_, i) => i !== index),
+    });
+  }
+
+  function updateQualification(index: number, patch: Partial<Qualification>) {
+    setProfile({
+      ...profile,
+      qualifications: (profile.qualifications ?? []).map((qualification, i) =>
+        i === index ? { ...qualification, ...patch } : qualification
+      ),
+    });
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <ImportFromLink onImport={setProfile} />
@@ -58,6 +83,13 @@ export default function ProfileForm({ onSubmit }: Props) {
           onAdd={addInstrument}
           onChange={updateInstrument}
           onRemove={removeInstrument}
+        />
+
+        <QualificationsField
+          qualifications={profile.qualifications ?? []}
+          onAdd={addQualification}
+          onChange={updateQualification}
+          onRemove={removeQualification}
         />
 
         <ThemeField
