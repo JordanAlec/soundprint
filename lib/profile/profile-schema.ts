@@ -31,8 +31,15 @@ export const SAMPLE_PROFILE: MusicProfile = {
         {
           genre: 'Jazz',
           artist: 'Miles Davis Quintet',
-          title: 'If I Were A Bell'
-        }
+          title: 'If I Were A Bell',
+          link: 'https://youtu.be/36wafFjFdYs?si=WdrveMUgnZfJ1lzM'
+        },
+        {
+          genre: 'Jazz',
+          artist: 'Miles Davis Quintet',
+          title: 'It Could Happen To You',
+          link: 'https://youtu.be/pvqyK2j_6b4?si=lt9dncmi3qPaOduB'
+        },
       ]
     },
     { instrument: "Bass",
@@ -40,9 +47,14 @@ export const SAMPLE_PROFILE: MusicProfile = {
       skillLevel: "Beginner",
       repertoire: [
         {
-          genre: 'Jazz',
-          artist: 'Cannonball Adderley',
-          title: 'Autumn Leaves'
+          genre: 'Funk',
+          artist: 'Jamiroquai',
+          title: 'Manifest Destiny'
+        },
+        {
+          genre: 'Funk',
+          artist: 'Jamiroquai',
+          title: 'Runaway'
         }
       ]
     },
