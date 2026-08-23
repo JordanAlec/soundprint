@@ -19,3 +19,45 @@ export const EMPTY_PROFILE: MusicProfile = {
   instruments: [],
   theme: profileThemes[0],
 };
+
+
+export const SAMPLE_PROFILE: MusicProfile = {
+  name: "Jordan Alec",
+  instruments: [
+    { instrument: "Piano",
+      playedSince: "2026-08-01",
+      skillLevel: "Beginner",
+      repertoire: [
+        {
+          genre: 'Jazz',
+          artist: 'Miles Davis Quintet',
+          title: 'If I Were A Bell',
+          link: 'https://youtu.be/36wafFjFdYs?si=WdrveMUgnZfJ1lzM'
+        },
+        {
+          genre: 'Jazz',
+          artist: 'Miles Davis Quintet',
+          title: 'It Could Happen To You',
+          link: 'https://youtu.be/pvqyK2j_6b4?si=lt9dncmi3qPaOduB'
+        },
+      ]
+    },
+    { instrument: "Bass",
+      playedSince: "2026-08-01",
+      skillLevel: "Beginner",
+      repertoire: [
+        {
+          genre: 'Funk',
+          artist: 'Jamiroquai',
+          title: 'Manifest Destiny'
+        },
+        {
+          genre: 'Funk',
+          artist: 'Jamiroquai',
+          title: 'Runaway'
+        }
+      ]
+    },
+  ],
+  theme: "studio",
+}
