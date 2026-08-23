@@ -10,11 +10,11 @@ export type DecodeResult =
 // Compacts musicProfileSchema into positional tuples (no key names, enums as
 // indices) by walking the zod schema itself, so new/removed fields need no
 // change here. Lossy domain compaction (e.g. date truncation) isn't derivable
-// from structure — tag the field with `.meta({ wireCompact: "<name>" })` and
-// register it once in NAMED_TRANSFORMS.
+// from structure, so tag the field with `.meta({ wireCompact: "<name>" })`
+// and register it once in NAMED_TRANSFORMS.
 //
 // Reordering existing fields reshuffles tuple positions and corrupts
-// already-issued tokens — append, don't reorder.
+// already-issued tokens. Append, don't reorder.
 
 type Codec = {
   encode: (value: unknown) => unknown;
@@ -40,7 +40,7 @@ const NAMED_TRANSFORMS: Record<string, Codec> = {
   },
 };
 
-// Exported for tests, so this can be checked against schemas it's never seen.
+// Exported for direct testing.
 export function codecFor(schema: IntrospectableSchema): Codec {
   const meta = schema.meta();
   if (meta?.wireCompact) {
@@ -91,12 +91,22 @@ export function codecFor(schema: IntrospectableSchema): Codec {
       };
     }
 
-    case "optional":
+    case "optional": {
+      // JSON.stringify silently turns an `undefined` array element into
+      // `null`, so an absent optional value always comes back off the wire
+      // as `null`. Decode treats the two as the same "absent" state.
+      const inner = codecFor(def.innerType!);
+      return {
+        encode: (value) => (value === undefined ? undefined : inner.encode(value)),
+        decode: (value) => (value === undefined || value === null ? undefined : inner.decode(value)),
+      };
+    }
+
     case "nullable": {
       const inner = codecFor(def.innerType!);
       return {
-        encode: (value) => (value === undefined || value === null ? value : inner.encode(value)),
-        decode: (value) => (value === undefined || value === null ? value : inner.decode(value)),
+        encode: (value) => (value === null ? null : inner.encode(value)),
+        decode: (value) => (value === null ? null : inner.decode(value)),
       };
     }
 

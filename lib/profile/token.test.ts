@@ -57,7 +57,7 @@ describe("encodeProfileToken / decodeProfileToken", () => {
     expect(result.ok).toBe(false);
   });
 
-  it("normalizes playedSince to day 01 (only month precision survives the wire)", () => {
+  it("normalizes playedSince to day 01", () => {
     const profile = { ...SAMPLE_PROFILE, instruments: [
       { ...SAMPLE_PROFILE.instruments[0], playedSince: "2026-08-15" },
     ] };
@@ -67,7 +67,7 @@ describe("encodeProfileToken / decodeProfileToken", () => {
     expect(result.ok && result.data.instruments[0].playedSince).toBe("2026-08-01");
   });
 
-  it("never throws on a truncated wire tuple, even for a missing required field", () => {
+  it("never throws on a truncated wire tuple", () => {
     const token = Buffer.from(JSON.stringify(["Jordan"]), "utf8").toString("base64url");
 
     expect(() => decodeProfileToken(token)).not.toThrow();
@@ -112,12 +112,24 @@ describe("codecFor", () => {
     expect(codec.decode(1)).toBe("medium");
   });
 
-  it("passes optional/nullable values through untouched", () => {
-    const schema = z.object({ a: z.string().optional(), b: z.string().nullable() });
+  // Goes through a real JSON round-trip, not encode()/decode() directly,
+  // since that's what actually collapses undefined to null.
+  it("recovers an absent optional field", () => {
+    const schema = z.object({ a: z.string().optional(), b: z.string() });
     const codec = codecFor(schema as unknown as IntrospectableSchema);
 
-    expect(codec.encode({ a: undefined, b: null })).toEqual([undefined, null]);
-    expect(codec.decode([undefined, null])).toEqual({ a: undefined, b: null });
+    const wire = JSON.parse(JSON.stringify(codec.encode({ a: undefined, b: "x" })));
+
+    expect(codec.decode(wire)).toEqual({ a: undefined, b: "x" });
+  });
+
+  it("keeps null on a nullable field", () => {
+    const schema = z.object({ a: z.string().nullable() });
+    const codec = codecFor(schema as unknown as IntrospectableSchema);
+
+    const wire = JSON.parse(JSON.stringify(codec.encode({ a: null })));
+
+    expect(codec.decode(wire)).toEqual({ a: null });
   });
 
   it("handles a nested schema it's never seen, unmodified", () => {
