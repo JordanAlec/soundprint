@@ -6,6 +6,10 @@ export function todayIsoDate(): string {
   return `${year}-${month}-${day}`;
 }
 
+export function formatMonthYear(isoDate: string): string {
+  return new Date(isoDate).toLocaleDateString(undefined, { month: "short", year: "numeric" });
+}
+
 export function formatPlayedSince(isoDate: string, today = new Date()): string {
   const start = new Date(isoDate);
 
