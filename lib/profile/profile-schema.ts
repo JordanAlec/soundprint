@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { instrumentSchema } from './instrument/instrument-schema';
 import { profileThemes, profileThemeSchema } from './theme/theme-schema';
+import { qualificationSchema, QUALIFICATION_MAX_ITEMS } from './qualification/qualification-schema';
 
 export const NAME_MAX_LENGTH = 100;
 
@@ -10,6 +11,8 @@ export const musicProfileSchema = z.object({
   name: z.string().max(NAME_MAX_LENGTH),
   instruments: z.array(instrumentSchema),
   theme: profileThemeSchema,
+  // Optional so links issued before this field existed still decode.
+  qualifications: z.array(qualificationSchema).max(QUALIFICATION_MAX_ITEMS).optional(),
 });
 
 export type MusicProfile = z.infer<typeof musicProfileSchema>;
@@ -18,6 +21,7 @@ export const EMPTY_PROFILE: MusicProfile = {
   name: "",
   instruments: [],
   theme: profileThemes[0],
+  qualifications: [],
 };
 
 
@@ -60,4 +64,12 @@ export const SAMPLE_PROFILE: MusicProfile = {
     },
   ],
   theme: "studio",
+  qualifications: [
+    {
+      title: "Grade 8 Piano",
+      institution: "ABRSM",
+      grade: "Distinction",
+      year: "2024",
+    },
+  ],
 }

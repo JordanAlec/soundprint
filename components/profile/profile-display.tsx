@@ -1,5 +1,6 @@
 import type { MusicProfile } from "@/lib/profile/profile-schema";
 import InstrumentCard from "./instrument-card";
+import QualificationsList from "./qualifications-list";
 
 interface Props {
   profile: MusicProfile;
@@ -21,6 +22,8 @@ export default function ProfileDisplay({ profile }: Props) {
           ))}
         </div>
       )}
+
+      <QualificationsList qualifications={profile.qualifications ?? []} />
     </div>
   );
 }
