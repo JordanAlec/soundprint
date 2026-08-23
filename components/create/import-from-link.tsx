@@ -13,7 +13,7 @@ export default function ImportFromLink({ onImport }: Props) {
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const token = extractProfileToken(value);
@@ -22,7 +22,7 @@ export default function ImportFromLink({ onImport }: Props) {
       return;
     }
 
-    const result = decodeProfileToken(token);
+    const result = await decodeProfileToken(token);
     if (!result.ok) {
       setError(result.error);
       return;

@@ -11,39 +11,39 @@ import {
 import { EMPTY_PROFILE, SAMPLE_PROFILE } from "./profile-schema";
 
 describe("encodeProfileToken / decodeProfileToken", () => {
-  it("round-trips SAMPLE_PROFILE", () => {
-    const token = encodeProfileToken(SAMPLE_PROFILE);
-    const result = decodeProfileToken(token);
+  it("round-trips SAMPLE_PROFILE", async () => {
+    const token = await encodeProfileToken(SAMPLE_PROFILE);
+    const result = await decodeProfileToken(token);
 
     expect(result).toEqual({ ok: true, data: SAMPLE_PROFILE });
   });
 
-  it("round-trips EMPTY_PROFILE", () => {
-    const token = encodeProfileToken(EMPTY_PROFILE);
-    const result = decodeProfileToken(token);
+  it("round-trips EMPTY_PROFILE", async () => {
+    const token = await encodeProfileToken(EMPTY_PROFILE);
+    const result = await decodeProfileToken(token);
 
     expect(result).toEqual({ ok: true, data: EMPTY_PROFILE });
   });
 
-  it("is smaller than a full-key JSON encoding", () => {
-    const token = encodeProfileToken(SAMPLE_PROFILE);
+  it("is smaller than a full-key JSON encoding", async () => {
+    const token = await encodeProfileToken(SAMPLE_PROFILE);
     const fullKeyToken = Buffer.from(JSON.stringify(SAMPLE_PROFILE), "utf8").toString("base64url");
 
     expect(token.length).toBeLessThan(fullKeyToken.length);
   });
 
-  it("rejects invalid base64url/JSON", () => {
-    const result = decodeProfileToken("not-a-real-token!!!");
+  it("rejects invalid base64url/JSON", async () => {
+    const result = await decodeProfileToken("not-a-real-token!!!");
 
     expect(result.ok).toBe(false);
   });
 
-  it("rejects a schema-invalid token", () => {
+  it("rejects a schema-invalid token", async () => {
     // skillLevel index 99 is out of range -> decodes to undefined -> fails validation.
     const badWire = ["Jordan", [["Piano", "2026-08", 99, []]], 0];
-    const token = Buffer.from(JSON.stringify(badWire), "utf8").toString("base64url");
+    const token = await gzipToBase64Url(JSON.stringify(badWire));
 
-    const result = decodeProfileToken(token);
+    const result = await decodeProfileToken(token);
 
     expect(result).toEqual({
       ok: false,
@@ -51,27 +51,26 @@ describe("encodeProfileToken / decodeProfileToken", () => {
     });
   });
 
-  it("rejects an empty string", () => {
-    const result = decodeProfileToken("");
+  it("rejects an empty string", async () => {
+    const result = await decodeProfileToken("");
 
     expect(result.ok).toBe(false);
   });
 
-  it("normalizes playedSince to day 01", () => {
+  it("normalizes playedSince to day 01", async () => {
     const profile = { ...SAMPLE_PROFILE, instruments: [
       { ...SAMPLE_PROFILE.instruments[0], playedSince: "2026-08-15" },
     ] };
 
-    const result = decodeProfileToken(encodeProfileToken(profile));
+    const result = await decodeProfileToken(await encodeProfileToken(profile));
 
     expect(result.ok && result.data.instruments[0].playedSince).toBe("2026-08-01");
   });
 
-  it("never throws on a truncated wire tuple", () => {
-    const token = Buffer.from(JSON.stringify(["Jordan"]), "utf8").toString("base64url");
+  it("never rejects on a truncated wire tuple", async () => {
+    const token = await gzipToBase64Url(JSON.stringify(["Jordan"]));
 
-    expect(() => decodeProfileToken(token)).not.toThrow();
-    expect(decodeProfileToken(token).ok).toBe(false);
+    await expect(decodeProfileToken(token)).resolves.toMatchObject({ ok: false });
   });
 });
 
@@ -172,3 +171,15 @@ describe("codecFor", () => {
     );
   });
 });
+
+// Mirrors token.ts's own gzip + base64url step, so a hand-crafted wire
+// tuple here still decodes.
+async function gzipToBase64Url(text: string): Promise<string> {
+  const stream = new Blob([text]).stream().pipeThrough(new CompressionStream("gzip"));
+  const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+
+  let binary = "";
+  bytes.forEach((byte) => (binary += String.fromCharCode(byte)));
+
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
