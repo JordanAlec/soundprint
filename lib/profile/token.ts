@@ -1,5 +1,5 @@
-// Uses atob/btoa (not Buffer) since encode runs client-side and decode
-// runs server-side — both are available in each.
+// Uses atob/btoa and CompressionStream (not Buffer/zlib) since encode runs
+// client-side and decode runs server-side — both are available in each.
 
 import { musicProfileSchema, type MusicProfile } from "./profile-schema";
 
@@ -129,8 +129,7 @@ function fromWire(value: unknown): unknown {
   return profileCodec.decode(value);
 }
 
-function toBase64Url(input: string): string {
-  const bytes = new TextEncoder().encode(input);
+function bytesToBase64Url(bytes: Uint8Array): string {
   let binary = "";
   bytes.forEach((byte) => (binary += String.fromCharCode(byte)));
 
@@ -140,17 +139,33 @@ function toBase64Url(input: string): string {
     .replace(/=+$/, "");
 }
 
-function fromBase64Url(input: string): string {
+function base64UrlToBytes(input: string): Uint8Array {
   const base64 = input.replace(/-/g, "+").replace(/_/g, "/");
   const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
 
   const binary = atob(padded);
-  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
+  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
 }
 
-export function encodeProfileToken(data: MusicProfile): string {
-  return toBase64Url(JSON.stringify(toWire(data)));
+// gzip shrinks the JSON payload before it hits base64 (which itself expands
+// bytes by ~33%) - the wire format stays plain JSON, only the bytes on the
+// wire are compressed.
+async function gzip(text: string): Promise<Uint8Array> {
+  const stream = new Blob([text]).stream().pipeThrough(new CompressionStream("gzip"));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+async function gunzip(bytes: Uint8Array): Promise<string> {
+  // TS's Uint8Array<ArrayBufferLike> vs BlobPart's Uint8Array<ArrayBuffer>
+  // is a lib.dom typing mismatch, not a real runtime concern here.
+  const stream = new Blob([bytes as BlobPart]).stream().pipeThrough(new DecompressionStream("gzip"));
+  const buffer = await new Response(stream).arrayBuffer();
+  return new TextDecoder().decode(buffer);
+}
+
+export async function encodeProfileToken(data: MusicProfile): Promise<string> {
+  const compressed = await gzip(JSON.stringify(toWire(data)));
+  return bytesToBase64Url(compressed);
 }
 
 export function extractProfileToken(input: string): string {
@@ -165,10 +180,10 @@ export function extractProfileToken(input: string): string {
   return trimmed.slice(index + marker.length);
 }
 
-export function decodeProfileToken(token: string): DecodeResult {
+export async function decodeProfileToken(token: string): Promise<DecodeResult> {
   let json: string;
   try {
-    json = fromBase64Url(token);
+    json = await gunzip(base64UrlToBytes(token));
   } catch {
     return { ok: false, error: "This link isn't a valid SoundPrint token." };
   }

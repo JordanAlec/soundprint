@@ -9,8 +9,8 @@ import type { MusicProfile } from "@/lib/profile/profile-schema";
 export default function CreateProfile() {
   const [path, setPath] = useState<string | null>(null);
 
-  function handleSubmit(profile: MusicProfile) {
-    const token = encodeProfileToken(profile);
+  async function handleSubmit(profile: MusicProfile) {
+    const token = await encodeProfileToken(profile);
     setPath(`/profile/${token}`);
   }
 

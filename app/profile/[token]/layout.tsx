@@ -3,7 +3,7 @@ import { decodeProfileTokenCached } from "@/lib/profile/decode-cached";
 
 export default async function ProfileLayout({ children, params }: LayoutProps<"/profile/[token]">) {
   const { token } = await params;
-  const result = decodeProfileTokenCached(token);
+  const result = await decodeProfileTokenCached(token);
 
   return <PageShell theme={result.ok ? result.data.theme : undefined}>{children}</PageShell>;
 }

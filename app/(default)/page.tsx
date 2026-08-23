@@ -1,10 +1,5 @@
-import PanelRidge from "@/components/layout/panel-ridge";
 import SubHeaderSection from "@/components/layout/sub-header-section";
-import Link from "next/link";
-import { encodeProfileToken } from "@/lib/profile/token";
-import { SAMPLE_PROFILE } from "@/lib/profile/profile-schema";
-
-const sampleProfileToken = encodeProfileToken(SAMPLE_PROFILE);
+import HomeNav from "@/components/home/home-nav";
 
 export default function Home() {
   return (
@@ -18,23 +13,7 @@ export default function Home() {
         </p>
       </SubHeaderSection>
 
-      <PanelRidge>
-        <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-ink-muted">
-            Status
-          </p>
-
-          <Link href={`/profile/${sampleProfileToken}`} className="text-accent underline underline-offset-2">
-              See a decoded sample profile
-          </Link>
-
-          <br />
-
-          <Link href="/create" className="text-accent underline underline-offset-2">
-              Or create a new one!
-          </Link>
-        </div>
-      </PanelRidge>
+      <HomeNav />
 
     </div>
   );
