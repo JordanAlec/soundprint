@@ -1,5 +1,7 @@
 # SoundPrint
 
+**Demo:** [jordanalec-soundprint.vercel.app](https://jordanalec-soundprint.vercel.app)
+
 Build a musical profile (instruments, qualifications, bands, highlights) and
 get a shareable link back. No account, no database: the profile data lives
 entirely in the URL, gzip-compressed and base64url-encoded. Editing a profile
