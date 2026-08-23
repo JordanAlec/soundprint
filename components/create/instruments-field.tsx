@@ -1,4 +1,4 @@
-import type { Instrument } from "@/lib/profile/schema";
+import { type Instrument } from '@/lib/profile/instrument/instrument-schema';
 import { labelClass } from "./form-styles";
 import InstrumentRow from "./instrument-row";
 

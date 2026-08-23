@@ -1,9 +1,11 @@
 import {
-  INSTRUMENT_MAX_LENGTH,
-  skillLevels,
-  todayIsoDate,
   type Instrument,
-} from "@/lib/profile/schema";
+  INSTRUMENT_MAX_LENGTH
+} from '@/lib/profile/instrument/instrument-schema';
+
+import { skillLevels } from '@/lib/profile/skill/skill-schema';
+
+import { todayIsoDate } from '@/utils/date-utils'
 import { labelClass, inputClass } from "./form-styles";
 
 interface Props {

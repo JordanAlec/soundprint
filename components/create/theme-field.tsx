@@ -1,4 +1,4 @@
-import { profileThemes, type ProfileTheme } from "@/lib/profile/schema";
+import { profileThemes, type ProfileTheme } from "@/lib/profile/theme/theme-schema";
 import { labelClass } from "./form-styles";
 
 const themeLabels: Record<ProfileTheme, string> = {

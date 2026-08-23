@@ -4,7 +4,7 @@ import { useState } from "react";
 import ProfileForm from "./profile-form";
 import ShareableLink from "./shareable-link";
 import { encodeProfileToken } from "@/lib/profile/token";
-import type { MusicProfile } from "@/lib/profile/schema";
+import type { MusicProfile } from "@/lib/profile/profile-schema";
 
 export default function CreateProfile() {
   const [path, setPath] = useState<string | null>(null);

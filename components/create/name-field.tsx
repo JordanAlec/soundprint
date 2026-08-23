@@ -1,4 +1,4 @@
-import { NAME_MAX_LENGTH } from "@/lib/profile/schema";
+import { NAME_MAX_LENGTH } from "@/lib/profile/profile-schema";
 import { labelClass, inputClass } from "./form-styles";
 
 interface Props {

@@ -2,7 +2,7 @@
 
 import { useState, type SubmitEvent } from "react";
 import { decodeProfileToken, extractProfileToken } from "@/lib/profile/token";
-import type { MusicProfile } from "@/lib/profile/schema";
+import type { MusicProfile } from "@/lib/profile/profile-schema";
 import { labelClass, inputClass } from "./form-styles";
 
 interface Props {

@@ -1,14 +1,16 @@
 // Uses atob/btoa (not Buffer) since encode runs client-side and decode
 // runs server-side — both are available in each.
 
-import { musicProfileSchema, profileThemes, skillLevels, type MusicProfile } from "./schema";
+import { skillLevels } from './skill/skill-schema';
+import { profileThemes } from './theme/theme-schema';
+
+import { musicProfileSchema, type MusicProfile } from "./profile-schema";
 
 export type DecodeResult =
   | { ok: true; data: MusicProfile }
   | { ok: false; error: string };
 
-// playedSince is truncated to year-month here and padded back to day 01
-// in fromWire.
+// playedSince is truncated to year-month here and padded back to day 01 in fromWire.
 type WireInstrument = [instrument: string, playedSince: string, skillLevel: number];
 type WireProfile = [name: string, instruments: WireInstrument[], theme: number];
 

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import TapeRuler from "./tape-ruler";
 import FooterTagLine from "./footer/footer-tagline";
 import Header from "./header/header";
-import type { ProfileTheme } from "@/lib/profile/schema";
+import type { ProfileTheme } from "@/lib/profile/theme/theme-schema";
 
 interface Props {
     children: ReactNode;

@@ -1,4 +1,4 @@
-import type { MusicProfile } from "@/lib/profile/schema";
+import type { MusicProfile } from "@/lib/profile/profile-schema";
 import InstrumentCard from "./instrument-card";
 
 interface Props {

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, type SubmitEvent } from "react";
-import { EMPTY_INSTRUMENT, EMPTY_PROFILE, type Instrument, type MusicProfile } from "@/lib/profile/schema";
+import { type Instrument, EMPTY_INSTRUMENT } from '@/lib/profile/instrument/instrument-schema';
+import { EMPTY_PROFILE, type MusicProfile } from "@/lib/profile/profile-schema";
 import ImportFromLink from "./import-from-link";
 import NameField from "./name-field";
 import InstrumentsField from "./instruments-field";

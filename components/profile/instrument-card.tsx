@@ -1,5 +1,5 @@
-import type { Instrument } from "@/lib/profile/schema";
-import { formatPlayedSince } from "@/lib/profile/duration";
+import type { Instrument } from "@/lib/profile/instrument/instrument-schema";
+import { formatPlayedSince } from "@/utils/date-utils";
 import SkillMeter from "./skill-meter";
 
 interface Props {

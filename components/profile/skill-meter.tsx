@@ -1,4 +1,4 @@
-import { skillLevels, type SkillLevel } from "@/lib/profile/schema";
+import { skillLevels, type SkillLevel } from "@/lib/profile/skill/skill-schema";
 
 interface Props {
   level: SkillLevel;
