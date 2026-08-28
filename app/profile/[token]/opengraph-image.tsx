@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { decodeProfileTokenCached } from "@/lib/profile/decode-cached";
 import type { ProfileTheme } from "@/lib/profile/theme/theme-schema";
+import { computeBadges } from "@/lib/profile/badge/badge-schema";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -71,6 +72,19 @@ export default async function Image({ params }: { params: Promise<{ token: strin
   const palette = THEME_PALETTE[theme];
   const instrumentList = instruments.map((instrument) => instrument.instrument).join(", ");
 
+  // Compact rollup only - full badge icons are unreadable at social-preview size.
+  const badges = computeBadges(result.data);
+  const tierCounts = { gold: 0, silver: 0, bronze: 0 };
+  for (const badge of badges) {
+    if ("tier" in badge) {
+      tierCounts[badge.tier] += 1;
+    }
+  }
+  const badgeRollup = (["gold", "silver", "bronze"] as const)
+    .filter((tier) => tierCounts[tier] > 0)
+    .map((tier) => `${tier.toUpperCase()} x${tierCounts[tier]}`)
+    .join("   ");
+
   return new ImageResponse(
     (
       <div
@@ -117,6 +131,20 @@ export default async function Image({ params }: { params: Promise<{ token: strin
           {instrumentList && (
             <div style={{ display: "flex", fontSize: 34, color: palette.accent2 }}>
               {instrumentList}
+            </div>
+          )}
+
+          {badgeRollup && (
+            <div
+              style={{
+                display: "flex",
+                fontSize: 22,
+                letterSpacing: 4,
+                textTransform: "uppercase",
+                color: palette.inkMuted,
+              }}
+            >
+              {badgeRollup}
             </div>
           )}
         </div>
