@@ -19,6 +19,26 @@ test("sample profile loads and decodes from the home page", async ({ page }) => 
   await expect(page.getByText("Jordan Alec", { exact: true })).toBeVisible();
 });
 
+test("forum signature banner is hidden by default and toggles open", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /Sample profile/ }).click();
+  await expect(page).toHaveURL(/\/profile\//);
+
+  const showButton = page.getByRole("button", { name: "Show forum signature" });
+  await expect(showButton).toBeVisible();
+  await expect(page.getByAltText(/forum signature/)).toHaveCount(0);
+
+  await showButton.click();
+
+  await expect(page.getByRole("button", { name: "Hide forum signature" })).toBeVisible();
+  await expect(page.getByAltText(/forum signature/)).toBeVisible();
+  await expect(page.getByText("BBCode", { exact: true })).toBeVisible();
+  await expect(page.getByText("HTML", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "Hide forum signature" }).click();
+  await expect(page.getByAltText(/forum signature/)).toHaveCount(0);
+});
+
 test("achievements page loads", async ({ page }) => {
   await page.goto("/achievements");
   await expect(page.getByRole("heading", { name: "Achievements" })).toBeVisible();

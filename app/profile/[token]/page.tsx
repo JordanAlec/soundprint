@@ -1,5 +1,6 @@
 import PanelRidge from "@/components/layout/panel-ridge";
 import RenderProfile from "@/components/profile/render-profile";
+import ForumSignaturePanel from "@/components/profile/forum-signature-panel";
 import { decodeProfileTokenCached } from "@/lib/profile/decode-cached";
 
 export { generateMetadata } from "@/lib/web/profile-metadata";
@@ -20,6 +21,12 @@ export default async function ProfilePage(props: PageProps<"/profile/[token]">) 
 
         <RenderProfile result={result} />
       </PanelRidge>
+
+      {result.ok && (
+        <PanelRidge>
+          <ForumSignaturePanel token={token} />
+        </PanelRidge>
+      )}
 
     </div>
   );
