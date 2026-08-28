@@ -39,6 +39,57 @@ test("forum signature banner is hidden by default and toggles open", async ({ pa
   await expect(page.getByAltText(/forum signature/)).toHaveCount(0);
 });
 
+test("compare page loads two profiles side by side", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /Sample profile/ }).click();
+  await expect(page).toHaveURL(/\/profile\//);
+  const profileUrl = page.url();
+
+  await page.goto("/compare");
+  await expect(page.getByRole("heading", { name: "Compare" })).toBeVisible();
+
+  await page.getByLabel("Profile A").fill(profileUrl);
+  await page.getByRole("button", { name: "Load" }).first().click();
+
+  await page.getByLabel("Profile B").fill(profileUrl);
+  await page.getByRole("button", { name: "Load" }).nth(1).click();
+
+  await expect(page.getByText("That's the same profile pasted twice", { exact: false })).toBeVisible();
+});
+
+test("compare page shows a summary and both profiles for two different links", async ({ page }) => {
+  await page.goto("/create");
+  await page.getByLabel("Name").fill("Musician One");
+  await page.getByRole("button", { name: "Add instrument" }).click();
+  await page.locator("#instrument-0").fill("Piano");
+  await page.locator("#played-since-0").fill("2020-01-01");
+  await page.getByRole("button", { name: "Generate shareable link" }).click();
+  await page.getByRole("link", { name: "View profile" }).click();
+  await expect(page).toHaveURL(/\/profile\//);
+  const profileOneUrl = page.url();
+
+  await page.goto("/create");
+  await page.getByLabel("Name").fill("Musician Two");
+  await page.getByRole("button", { name: "Add instrument" }).click();
+  await page.locator("#instrument-0").fill("Piano");
+  await page.locator("#played-since-0").fill("2020-01-01");
+  await page.getByRole("button", { name: "Generate shareable link" }).click();
+  await page.getByRole("link", { name: "View profile" }).click();
+  await expect(page).toHaveURL(/\/profile\//);
+  const profileTwoUrl = page.url();
+
+  await page.goto("/compare");
+  await page.getByLabel("Profile A").fill(profileOneUrl);
+  await page.getByRole("button", { name: "Load" }).first().click();
+  await page.getByLabel("Profile B").fill(profileTwoUrl);
+  await page.getByRole("button", { name: "Load" }).nth(1).click();
+
+  await expect(page.getByText("Musician One", { exact: true })).toBeVisible();
+  await expect(page.getByText("Musician Two", { exact: true })).toBeVisible();
+  await expect(page.getByText("Shared", { exact: true })).toBeVisible();
+  await expect(page.getByText("Piano", { exact: true }).first()).toBeVisible();
+});
+
 test("achievements page loads", async ({ page }) => {
   await page.goto("/achievements");
   await expect(page.getByRole("heading", { name: "Achievements" })).toBeVisible();
