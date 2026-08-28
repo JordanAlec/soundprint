@@ -47,6 +47,45 @@ export const faqGroups: FaqGroup[] = [
         answer:
           "Not the link you already sent as this is tied to the data. Open Create, use \"Import from existing link\" to load your previous data, make changes, and generate a new link.",
       },
+      {
+        question: "How does comparing profiles work?",
+        answer:
+          "Go to Compare and paste two shareable links. Both profiles load side by side, with a summary at the top showing shared and distinct instruments and genres.",
+      },
+      {
+        question: "What's the point of comparing profiles?",
+        answer:
+          "It's a talking point, not a contest. There's no score or winner, just two profiles next to each other so you and a bandmate or friend can spot what you have in common and what you don't.",
+      },
+    ],
+  },
+  {
+    heading: "Badges & achievements",
+    entries: [
+      {
+        question: "What are badges?",
+        answer:
+          "Bronze, silver, and gold badges earned from what's in your profile: instrument count, skill level, qualifications logged, and repertoire breadth. There are also one-off badges for having a band, linking a recording, and filling in every section.",
+      },
+      {
+        question: "How do I earn a badge?",
+        answer:
+          "Just fill in your profile. Badges are computed straight from your instruments, qualifications, bands, and repertoire, there's nothing extra to do.",
+      },
+      {
+        question: "Why do I only see one badge per category?",
+        answer:
+          "Each category shows your highest tier only, gold already implies you've cleared bronze and silver for that category.",
+      },
+      {
+        question: "Where can I see every badge and what it takes to earn it?",
+        answer: "The Achievements page lists the full catalogue, earned or not, with what each tier requires.",
+      },
+      {
+        question: "Are badges saved to my profile?",
+        answer:
+          "No. Like the rest of your data, badges aren't stored anywhere, they're recalculated from your profile every time the link is opened. Update your profile and generate a new link to see new badges reflected.",
+      },
     ],
   },
   {
