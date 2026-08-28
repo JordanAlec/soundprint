@@ -19,6 +19,11 @@ test("sample profile loads and decodes from the home page", async ({ page }) => 
   await expect(page.getByText("Jordan Alec", { exact: true })).toBeVisible();
 });
 
+test("achievements page loads", async ({ page }) => {
+  await page.goto("/achievements");
+  await expect(page.getByRole("heading", { name: "Achievements" })).toBeVisible();
+});
+
 test("create page loads", async ({ page }) => {
   await page.goto("/create");
   await expect(page.getByRole("heading", { name: "Create" })).toBeVisible();

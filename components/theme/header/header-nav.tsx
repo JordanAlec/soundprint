@@ -3,6 +3,7 @@ import NextLink from "next/link";
 const navItems = [
     { href: "/", label: "Home" },
     { href: "/create", label: "Create" },
+    { href: "/achievements", label: "Achievements" },
     { href: "/faq", label: "FAQ" },
 ];
 

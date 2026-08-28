@@ -1,9 +1,11 @@
 import type { MusicProfile } from "@/lib/profile/profile-schema";
+import { computeBadges } from "@/lib/profile/badge/badge-schema";
 import InstrumentCard from "./instrument-card";
 import BandsList from "./bands-list";
 import LookingForBandBadge from "./looking-for-band-badge";
 import QualificationsList from "./qualifications-list";
 import HighlightsList from "./highlights-list";
+import BadgesList from "./badge/badges-list";
 
 interface Props {
   profile: MusicProfile;
@@ -19,6 +21,8 @@ export default function ProfileDisplay({ profile }: Props) {
 
         <LookingForBandBadge lookingForBand={profile.lookingForBand} />
       </div>
+
+      <BadgesList badges={computeBadges(profile)} />
 
       {profile.instruments.length === 0 ? (
         <p className="text-sm text-ink-muted">No instruments listed yet.</p>
