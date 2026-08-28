@@ -17,9 +17,10 @@ import ThemeField from "./theme-field";
 
 interface Props {
   onSubmit: (profile: MusicProfile) => void;
+  onThemePreview?: (theme: MusicProfile["theme"]) => void;
 }
 
-export default function ProfileForm({ onSubmit }: Props) {
+export default function ProfileForm({ onSubmit, onThemePreview }: Props) {
   const [profile, setProfile] = useState<MusicProfile>(EMPTY_PROFILE);
 
   const instruments = useListField(profile.instruments, (instruments) =>
@@ -38,9 +39,14 @@ export default function ProfileForm({ onSubmit }: Props) {
     onSubmit(profile);
   }
 
+  function handleImport(imported: MusicProfile) {
+    setProfile(imported);
+    onThemePreview?.(imported.theme);
+  }
+
   return (
     <div className="flex flex-col gap-6">
-      <ImportFromLink onImport={setProfile} />
+      <ImportFromLink onImport={handleImport} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <NameField
@@ -83,7 +89,10 @@ export default function ProfileForm({ onSubmit }: Props) {
 
         <ThemeField
           value={profile.theme}
-          onChange={(theme) => setProfile({ ...profile, theme })}
+          onChange={(theme) => {
+            setProfile({ ...profile, theme });
+            onThemePreview?.(theme);
+          }}
         />
 
         <button
