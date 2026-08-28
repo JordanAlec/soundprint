@@ -1,89 +1,27 @@
 import { ImageResponse } from "next/og";
 import { decodeProfileTokenCached } from "@/lib/profile/decode-cached";
-import type { ProfileTheme } from "@/lib/profile/theme/theme-schema";
-import { computeBadges } from "@/lib/profile/badge/badge-schema";
+import { deriveOgContent, hexToTransparent } from "@/lib/profile/og/og-visual";
+import { OgFallback } from "@/lib/profile/og/og-fallback";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// Satori can't read CSS custom properties, so these are literal copies of
-// the theme palettes in globals.css. Keep in sync if a theme's colors change.
-const THEME_PALETTE: Record<
-  ProfileTheme,
-  { canvas: string; ink: string; inkMuted: string; accent: string; accent2: string; accentInk: string }
-> = {
-  studio: {
-    canvas: "#17181a",
-    ink: "#ece9e2",
-    inkMuted: "#9c9890",
-    accent: "#e0a340",
-    accent2: "#4fb0a8",
-    accentInk: "#17181a",
-  },
-  sunburst: {
-    canvas: "#f5efe1",
-    ink: "#2b2117",
-    inkMuted: "#7a6f5c",
-    accent: "#c1522a",
-    accent2: "#7a8f4a",
-    accentInk: "#fdf6ec",
-  },
-  neon: {
-    canvas: "#0b0f2e",
-    ink: "#eef0ff",
-    inkMuted: "#9099d6",
-    accent: "#ff3ea5",
-    accent2: "#28e0ff",
-    accentInk: "#0b0f2e",
-  },
-};
+const BAR_COUNT = 48;
+const BAR_TRACK_HEIGHT = 180;
 
 export default async function Image({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const result = await decodeProfileTokenCached(token);
 
   if (!result.ok) {
-    const palette = THEME_PALETTE.studio;
-
-    return new ImageResponse(
-      (
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            height: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-            background: palette.canvas,
-            color: palette.ink,
-            fontSize: 64,
-            letterSpacing: 4,
-            textTransform: "uppercase",
-          }}
-        >
-          SoundPrint
-        </div>
-      ),
-      { ...size },
-    );
+    return new ImageResponse(<OgFallback fontSize={64} letterSpacing={4} />, { ...size });
   }
 
-  const { name, theme, instruments, lookingForBand } = result.data;
-  const palette = THEME_PALETTE[theme];
-  const instrumentList = instruments.map((instrument) => instrument.instrument).join(", ");
-
-  // Compact rollup only - full badge icons are unreadable at social-preview size.
-  const badges = computeBadges(result.data);
-  const tierCounts = { gold: 0, silver: 0, bronze: 0 };
-  for (const badge of badges) {
-    if ("tier" in badge) {
-      tierCounts[badge.tier] += 1;
-    }
-  }
-  const badgeRollup = (["gold", "silver", "bronze"] as const)
-    .filter((tier) => tierCounts[tier] > 0)
-    .map((tier) => `${tier.toUpperCase()} x${tierCounts[tier]}`)
-    .join("   ");
+  const { name, palette, instrumentList, rollup, lookingForBand, bars } = deriveOgContent(
+    result.data,
+    token,
+    BAR_COUNT,
+  );
 
   return new ImageResponse(
     (
@@ -97,6 +35,7 @@ export default async function Image({ params }: { params: Promise<{ token: strin
           background: palette.canvas,
           color: palette.ink,
           padding: 64,
+          overflow: "hidden",
         }}
       >
         <div
@@ -108,6 +47,45 @@ export default async function Image({ params }: { params: Promise<{ token: strin
             display: "flex",
             height: 10,
             background: palette.accent,
+          }}
+        />
+
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            alignItems: "flex-end",
+            height: BAR_TRACK_HEIGHT,
+            opacity: 0.5,
+          }}
+        >
+          {bars.map((height, index) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                flex: 1,
+                marginLeft: index === 0 ? 0 : 4,
+                height: `${Math.round(height * BAR_TRACK_HEIGHT)}px`,
+                background: index % 2 === 0 ? palette.accent : palette.accent2,
+                borderRadius: 2,
+              }}
+            />
+          ))}
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            height: BAR_TRACK_HEIGHT,
+            background: `linear-gradient(to bottom, ${palette.canvas} 0%, ${hexToTransparent(palette.canvas)} 55%)`,
           }}
         />
 
@@ -125,7 +103,7 @@ export default async function Image({ params }: { params: Promise<{ token: strin
 
         <div style={{ display: "flex", flex: 1, flexDirection: "column", justifyContent: "center", gap: 20 }}>
           <div style={{ display: "flex", fontSize: 76, fontWeight: 700, textTransform: "uppercase" }}>
-            {name || "Untitled profile"}
+            {name}
           </div>
 
           {instrumentList && (
@@ -134,7 +112,7 @@ export default async function Image({ params }: { params: Promise<{ token: strin
             </div>
           )}
 
-          {badgeRollup && (
+          {rollup && (
             <div
               style={{
                 display: "flex",
@@ -144,7 +122,7 @@ export default async function Image({ params }: { params: Promise<{ token: strin
                 color: palette.inkMuted,
               }}
             >
-              {badgeRollup}
+              {rollup}
             </div>
           )}
         </div>
