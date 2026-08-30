@@ -44,6 +44,10 @@ export default function ShareableLink({ path, onReset }: Props) {
           {copied ? "Copied!" : "Copy link"}
         </button>
 
+        <span className="sr-only" role="status" aria-live="polite">
+          {copied ? "Link copied to clipboard." : ""}
+        </span>
+
         <NextLink
           href={path}
           className="rounded-sm border border-accent bg-accent px-4 py-2 text-sm font-medium text-accent-ink hover:opacity-90"
