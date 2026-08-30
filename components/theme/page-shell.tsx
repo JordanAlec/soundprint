@@ -17,12 +17,19 @@ export default function PageShell({ children, theme }: Props) {
         >
             <div className="grain-overlay" aria-hidden />
 
+            <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:border focus:border-accent focus:bg-canvas focus:px-3 focus:py-2 focus:text-sm focus:text-ink"
+            >
+                Skip to content
+            </a>
+
             <div className="mx-auto flex min-h-dvh w-full max-w-screen-sm flex-col px-4 sm:max-w-3xl sm:px-6 lg:max-w-4xl lg:px-8">
                 <Header />
 
                 <TapeRuler />
 
-                <main className="flex-1 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-8">
+                <main id="main-content" className="flex-1 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-8">
                     {children}
                 </main>
 

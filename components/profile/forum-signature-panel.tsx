@@ -47,6 +47,10 @@ export default function ForumSignaturePanel({ token }: Props) {
         {open ? "Hide forum signature" : "Show forum signature"}
       </button>
 
+      <span className="sr-only" role="status" aria-live="polite">
+        {copiedFormat ? `${copiedFormat === "bbcode" ? "BBCode" : "HTML"} snippet copied to clipboard.` : ""}
+      </span>
+
       {open && (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element -- external, dynamically generated image, not an optimizable local asset */}
