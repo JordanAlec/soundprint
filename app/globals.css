@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: dark;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 @theme {
   --color-canvas: #17181a;
   --color-surface: #1e2023;
@@ -9,7 +19,8 @@
   --color-accent: #e0a340;
   --color-accent-2: #4fb0a8;
   --color-accent-ink: #17181a;
-  --color-border: #2d2e31;
+  --color-border: #646467;
+  --color-ridge: #2d2e31;
 
   --font-display: var(--font-display-raw), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-body-raw), ui-sans-serif, system-ui, sans-serif;
@@ -21,18 +32,21 @@
 /* Overridden per [data-theme] ancestor; no component needs to know which
    theme is active since utilities like bg-canvas resolve these at paint time. */
 [data-theme="sunburst"] {
+  color-scheme: light;
   --color-canvas: #f5efe1;
   --color-surface: #fffdf8;
   --color-surface-hover: #ede4d0;
   --color-ink: #2b2117;
-  --color-ink-muted: #7a6f5c;
-  --color-accent: #c1522a;
-  --color-accent-2: #7a8f4a;
+  --color-ink-muted: #746957;
+  --color-accent: #b24b27;
+  --color-accent-2: #60713a;
   --color-accent-ink: #fdf6ec;
-  --color-border: #d9cbae;
+  --color-border: #918875;
+  --color-ridge: #d9cbae;
 }
 
 [data-theme="neon"] {
+  color-scheme: dark;
   --color-canvas: #0b0f2e;
   --color-surface: #12173f;
   --color-surface-hover: #1b2154;
@@ -41,7 +55,8 @@
   --color-accent: #ff3ea5;
   --color-accent-2: #28e0ff;
   --color-accent-ink: #0b0f2e;
-  --color-border: #2c3470;
+  --color-border: #585f8e;
+  --color-ridge: #2c3470;
 }
 
 .tape-ruler {
@@ -60,7 +75,7 @@
   height: 4px;
   background-image: repeating-linear-gradient(
     to right,
-    var(--color-border) 0 1px,
+    var(--color-ridge) 0 1px,
     transparent 1px 8px
   );
 }
@@ -78,7 +93,7 @@
   background-image: repeating-linear-gradient(
     to bottom,
     transparent 0 3px,
-    color-mix(in oklab, var(--color-border) 55%, transparent) 3px 4px
+    color-mix(in oklab, var(--color-ridge) 55%, transparent) 3px 4px
   );
 }
 
