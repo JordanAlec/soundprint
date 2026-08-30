@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import NextLink from "next/link";
 
 const navItems = [
@@ -13,9 +13,28 @@ const navItems = [
 
 export default function HeaderNav() {
     const [isOpen, setIsOpen] = useState(false);
+    const toggleRef = useRef<HTMLButtonElement>(null);
+    const firstItemRef = useRef<HTMLAnchorElement>(null);
+
+    useEffect(() => {
+        if (isOpen) {
+            firstItemRef.current?.focus();
+        }
+    }, [isOpen]);
+
+    function closeMenu() {
+        setIsOpen(false);
+        toggleRef.current?.focus();
+    }
+
+    function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
+        if (event.key === "Escape") {
+            closeMenu();
+        }
+    }
 
     return (
-        <nav className="relative">
+        <nav className="relative" onKeyDown={handleKeyDown}>
             <ul className="hidden items-center gap-4 sm:flex">
                 {navItems.map((item) => (
                     <li key={item.href}>
@@ -30,6 +49,7 @@ export default function HeaderNav() {
             </ul>
 
             <button
+                ref={toggleRef}
                 type="button"
                 onClick={() => setIsOpen((current) => !current)}
                 aria-expanded={isOpen}
@@ -49,11 +69,12 @@ export default function HeaderNav() {
                     id="header-nav-menu"
                     className="absolute right-0 top-full z-10 mt-2 flex w-40 flex-col gap-1 rounded-card border border-border bg-canvas p-2 shadow-lg sm:hidden"
                 >
-                    {navItems.map((item) => (
+                    {navItems.map((item, index) => (
                         <li key={item.href}>
                             <NextLink
+                                ref={index === 0 ? firstItemRef : undefined}
                                 href={item.href}
-                                onClick={() => setIsOpen(false)}
+                                onClick={closeMenu}
                                 className="block rounded-sm px-2 py-1.5 font-mono text-[11px] uppercase tracking-widest text-ink-muted transition-colors hover:bg-surface-hover hover:text-ink"
                             >
                                 {item.label}
