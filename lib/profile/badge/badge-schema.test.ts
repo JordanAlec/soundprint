@@ -184,6 +184,17 @@ describe("computeBadges", () => {
     });
   });
 
+  describe("linkedUp", () => {
+    it("is not earned with no externalLink", () => {
+      expect(findTier(computeBadges(EMPTY_PROFILE), "linkedUp")).toBeUndefined();
+    });
+
+    it("is earned when externalLink is set", () => {
+      const profile: MusicProfile = { ...EMPTY_PROFILE, externalLink: "https://example.com" };
+      expect(findTier(computeBadges(profile), "linkedUp")).toEqual({ category: "linkedUp", kind: "unlocked" });
+    });
+  });
+
   it("returns multiple badges at once for a well-rounded profile", () => {
     const profile: MusicProfile = {
       ...EMPTY_PROFILE,

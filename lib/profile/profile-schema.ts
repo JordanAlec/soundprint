@@ -18,6 +18,7 @@ export const musicProfileSchema = z.object({
   highlights: z.array(highlightSchema).max(HIGHLIGHT_MAX_ITEMS).optional(),
   bands: z.array(bandSchema).max(BAND_MAX_ITEMS).optional(),
   lookingForBand: z.boolean().optional(),
+  externalLink: z.url().optional(),
 });
 
 export type MusicProfile = z.infer<typeof musicProfileSchema>;
@@ -89,4 +90,5 @@ export const SAMPLE_PROFILE: MusicProfile = {
     { name: "Backline", from: "2018-01-01", to: "2021-06-01", position: "Piano" },
   ],
   lookingForBand: true,
+  externalLink: "https://jordanalec.co.uk",
 }

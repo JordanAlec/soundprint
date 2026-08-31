@@ -3,6 +3,7 @@ import { computeBadges } from "@/lib/profile/badge/badge-schema";
 import InstrumentCard from "./instrument-card";
 import BandsList from "./bands-list";
 import LookingForBandBadge from "./looking-for-band-badge";
+import ExternalLink from "./external-link";
 import QualificationsList from "./qualifications-list";
 import HighlightsList from "./highlights-list";
 import BadgesList from "./badge/badges-list";
@@ -20,6 +21,8 @@ export default function ProfileDisplay({ profile }: Props) {
         </p>
 
         <LookingForBandBadge lookingForBand={profile.lookingForBand} />
+
+        <ExternalLink href={profile.externalLink} />
       </div>
 
       <BadgesList badges={computeBadges(profile)} />

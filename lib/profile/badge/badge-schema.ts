@@ -12,7 +12,7 @@ export const tieredBadgeCategories = [
 ] as const;
 export type TieredBadgeCategory = (typeof tieredBadgeCategories)[number];
 
-export const unlockedBadgeCategories = ["bandMember", "showcase", "allRounder"] as const;
+export const unlockedBadgeCategories = ["bandMember", "showcase", "allRounder", "linkedUp"] as const;
 export type UnlockedBadgeCategory = (typeof unlockedBadgeCategories)[number];
 
 export interface TierDefinition {
@@ -84,6 +84,7 @@ export const UNLOCKED_DEFINITIONS: UnlockedDefinition[] = [
     name: "All-Rounder",
     description: "Fill in instruments, qualifications, highlights and bands.",
   },
+  { category: "linkedUp", name: "Linked Up", description: "Add an external profile link." },
 ];
 
 export interface AchievementEntry {
@@ -174,6 +175,10 @@ export function computeBadges(profile: MusicProfile): Badge[] {
     (profile.bands?.length ?? 0) >= 1;
   if (isAllRounder) {
     badges.push({ category: "allRounder", kind: "unlocked" });
+  }
+
+  if (profile.externalLink) {
+    badges.push({ category: "linkedUp", kind: "unlocked" });
   }
 
   return badges;

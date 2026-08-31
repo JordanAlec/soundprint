@@ -8,6 +8,7 @@ import { EMPTY_PROFILE, type MusicProfile } from "@/lib/profile/profile-schema";
 import { useListField } from "./use-list-field";
 import ImportFromLink from "./import-from-link";
 import NameField from "./name-field";
+import ExternalLinkField from "./external-link-field";
 import InstrumentsField from "./instruments-field";
 import BandsField from "./bands-field";
 import LookingForBandField from "./looking-for-band-field";
@@ -71,6 +72,11 @@ export default function ProfileForm({ onSubmit, onThemePreview }: Props) {
         <LookingForBandField
           value={profile.lookingForBand ?? false}
           onChange={(lookingForBand) => setProfile({ ...profile, lookingForBand })}
+        />
+
+        <ExternalLinkField
+          value={profile.externalLink ?? ""}
+          onChange={(externalLink) => setProfile({ ...profile, externalLink: externalLink || undefined })}
         />
 
         <QualificationsField
