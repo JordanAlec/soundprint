@@ -3,16 +3,18 @@ import type { MedalPalette } from "@/lib/profile/badge/badge-palette";
 
 interface Props {
   palette: MedalPalette;
-  // Ranked tiers only. Unlocked achievements get a seal instead (see `seal` below).
+  // Ranked tiers get a ribbon. Unlocked achievements get a seal instead (see `seal` below).
   ribbon?: boolean;
   size?: number;
+  // Center glyph, defaults to a star.
+  glyph?: string;
 }
 
 const SEAL_STUD_COUNT = 10;
 
-export default function BadgeMedal({ palette, ribbon = false, size = 22 }: Props) {
+export default function BadgeMedal({ palette, ribbon = false, size = 22, glyph = "★" }: Props) {
   const gradientId = useId();
-  // Unlocked badges get a jeweled halo instead of a ribbon - a different
+  // Non-ribboned achievements get a jeweled halo instead - a different
   // ornament, not a plainer one, so "no tier" doesn't read as "lesser".
   const seal = !ribbon;
   const studRadius = seal ? size * 0.05 : 0;
@@ -75,7 +77,7 @@ export default function BadgeMedal({ palette, ribbon = false, size = 22 }: Props
         fill={palette.ink}
         opacity={0.85}
       >
-        ★
+        {glyph}
       </text>
     </svg>
   );

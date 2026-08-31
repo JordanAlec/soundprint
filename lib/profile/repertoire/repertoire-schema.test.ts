@@ -38,6 +38,18 @@ describe("repertoireSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("rejects a non-http(s) link", () => {
+    const result = repertoireSchema.safeParse({
+      ...EMPTY_REPERTOIRE,
+      genre: "Jazz",
+      artist: "Miles Davis Quintet",
+      title: "If I Were A Bell",
+      link: "javascript:alert(1)",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
   it("rejects a title longer than REPERTOIRE_FIELD_MAX_LENGTH", () => {
     const result = repertoireSchema.safeParse({
       ...EMPTY_REPERTOIRE,

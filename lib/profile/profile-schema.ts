@@ -18,6 +18,7 @@ export const musicProfileSchema = z.object({
   highlights: z.array(highlightSchema).max(HIGHLIGHT_MAX_ITEMS).optional(),
   bands: z.array(bandSchema).max(BAND_MAX_ITEMS).optional(),
   lookingForBand: z.boolean().optional(),
+  externalLink: z.httpUrl().optional(),
 });
 
 export type MusicProfile = z.infer<typeof musicProfileSchema>;
@@ -33,12 +34,14 @@ export const EMPTY_PROFILE: MusicProfile = {
 };
 
 
+// Deliberately maxes out every achievement, including the completionist
+// capstone - it's the demo profile, so it should show the whole system off.
 export const SAMPLE_PROFILE: MusicProfile = {
-  name: "Jordan Alec",
+  name: "The Amazing Virtuoso",
   instruments: [
     { instrument: "Piano",
       playedSince: "2026-08-01",
-      skillLevel: "Beginner",
+      skillLevel: "Expert",
       repertoire: [
         {
           genre: 'Jazz',
@@ -52,11 +55,21 @@ export const SAMPLE_PROFILE: MusicProfile = {
           title: 'It Could Happen To You',
           link: 'https://youtu.be/pvqyK2j_6b4?si=lt9dncmi3qPaOduB'
         },
+        {
+          genre: 'Jazz',
+          artist: 'Bill Evans Trio',
+          title: 'Waltz For Debby',
+        },
+        {
+          genre: 'Classical',
+          artist: 'Chopin',
+          title: 'Nocturne Op. 9 No. 2',
+        },
       ]
     },
     { instrument: "Bass",
       playedSince: "2026-08-01",
-      skillLevel: "Beginner",
+      skillLevel: "Advanced",
       repertoire: [
         {
           genre: 'Funk',
@@ -67,7 +80,64 @@ export const SAMPLE_PROFILE: MusicProfile = {
           genre: 'Funk',
           artist: 'Jamiroquai',
           title: 'Runaway'
-        }
+        },
+        {
+          genre: 'Funk',
+          artist: 'Stevie Wonder',
+          title: 'Higher Ground'
+        },
+        {
+          genre: 'Jazz',
+          artist: 'Weather Report',
+          title: 'Birdland'
+        },
+      ]
+    },
+    { instrument: "Guitar",
+      playedSince: "2026-08-01",
+      skillLevel: "Advanced Intermediate",
+      repertoire: [
+        {
+          genre: 'Rock',
+          artist: 'Fleetwood Mac',
+          title: 'The Chain'
+        },
+        {
+          genre: 'Rock',
+          artist: 'Eagles',
+          title: 'Hotel California'
+        },
+        {
+          genre: 'Blues',
+          artist: 'B.B. King',
+          title: 'The Thrill Is Gone'
+        },
+        {
+          genre: 'Soul',
+          artist: 'Al Green',
+          title: 'Let\'s Stay Together'
+        },
+      ]
+    },
+    { instrument: "Drums",
+      playedSince: "2026-08-01",
+      skillLevel: "Intermediate",
+      repertoire: [
+        {
+          genre: 'Funk',
+          artist: 'Tower of Power',
+          title: 'What Is Hip?'
+        },
+        {
+          genre: 'Rock',
+          artist: 'Led Zeppelin',
+          title: 'Fool In The Rain'
+        },
+        {
+          genre: 'Jazz',
+          artist: 'Art Blakey',
+          title: 'Moanin\''
+        },
       ]
     },
   ],
@@ -79,6 +149,29 @@ export const SAMPLE_PROFILE: MusicProfile = {
       grade: "Distinction",
       year: "2024",
     },
+    {
+      title: "Grade 8 Bass",
+      institution: "Rockschool",
+      grade: "Distinction",
+      year: "2023",
+    },
+    {
+      title: "BA Music Performance",
+      institution: "Royal Northern College of Music",
+      grade: "First Class",
+      year: "2022",
+    },
+    {
+      title: "Grade 7 Guitar",
+      institution: "ABRSM",
+      grade: "Merit",
+      year: "2021",
+    },
+    {
+      title: "Session Drumming Diploma",
+      institution: "Drum Tech",
+      year: "2020",
+    },
   ],
   highlights: [
     "Supported a UK jazz festival headline set, 2023",
@@ -89,4 +182,5 @@ export const SAMPLE_PROFILE: MusicProfile = {
     { name: "Backline", from: "2018-01-01", to: "2021-06-01", position: "Piano" },
   ],
   lookingForBand: true,
+  externalLink: "https://jordanalec.co.uk",
 }

@@ -25,4 +25,37 @@ describe("musicProfileSchema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  describe("externalLink", () => {
+    it("accepts a profile without an externalLink", () => {
+      expect(musicProfileSchema.safeParse(EMPTY_PROFILE).success).toBe(true);
+    });
+
+    it("accepts a valid externalLink URL", () => {
+      const result = musicProfileSchema.safeParse({
+        ...EMPTY_PROFILE,
+        externalLink: "https://example.com",
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects an invalid externalLink URL", () => {
+      const result = musicProfileSchema.safeParse({
+        ...EMPTY_PROFILE,
+        externalLink: "not-a-url",
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it("rejects a non-http(s) externalLink, e.g. javascript:", () => {
+      const result = musicProfileSchema.safeParse({
+        ...EMPTY_PROFILE,
+        externalLink: "javascript:alert(1)",
+      });
+
+      expect(result.success).toBe(false);
+    });
+  });
 });

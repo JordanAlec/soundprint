@@ -1,4 +1,4 @@
-import type { BadgeTier } from "./badge-schema";
+import type { BadgeTier, CapstoneTier } from "./badge-schema";
 
 export interface MedalPalette {
   light: string; // gradient highlight / bevel
@@ -18,6 +18,26 @@ export const BADGE_TIER_PALETTE: Record<BadgeTier, MedalPalette> = {
 // the metal tiers so they don't imply a rank that doesn't exist.
 export const BADGE_UNLOCKED_PALETTE: MedalPalette = { light: "#8fb0d1", dark: "#3f5f82", ink: "#f3f6fa" };
 
-export function paletteForTier(tier?: BadgeTier): MedalPalette {
-  return tier ? BADGE_TIER_PALETTE[tier] : BADGE_UNLOCKED_PALETTE;
+// Diamond - brighter and colder than gold, so it reads as beyond the metal
+// tiers rather than another rung on them.
+export const BADGE_CAPSTONE_PALETTE: MedalPalette = { light: "#eafeff", dark: "#5fd0e0", ink: "#0b2e35" };
+
+const ALL_TIER_PALETTE: Record<BadgeTier | CapstoneTier, MedalPalette> = {
+  ...BADGE_TIER_PALETTE,
+  diamond: BADGE_CAPSTONE_PALETTE,
+};
+
+export function paletteForTier(tier?: BadgeTier | CapstoneTier): MedalPalette {
+  return tier ? ALL_TIER_PALETTE[tier] : BADGE_UNLOCKED_PALETTE;
+}
+
+const TIER_GLYPH: Record<BadgeTier | CapstoneTier, string> = {
+  bronze: "★",
+  silver: "★",
+  gold: "★",
+  diamond: "◆",
+};
+
+export function glyphForTier(tier?: BadgeTier | CapstoneTier): string {
+  return tier ? TIER_GLYPH[tier] : "★";
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { THEME_PALETTE, badgeRollup, waveformBars, hexToTransparent, deriveOgContent } from "./og-visual";
-import { EMPTY_PROFILE, type MusicProfile } from "../profile-schema";
+import { EMPTY_PROFILE, SAMPLE_PROFILE, type MusicProfile } from "../profile-schema";
 import { EMPTY_INSTRUMENT, type Instrument } from "../instrument/instrument-schema";
 import { profileThemes } from "../theme/theme-schema";
 
@@ -31,6 +31,11 @@ describe("badgeRollup", () => {
     const profile: MusicProfile = { ...EMPTY_PROFILE, instruments: instrumentsOf(4) };
     // 4 instruments -> gold instrumentCount; Expert skill -> gold skillTier.
     expect(badgeRollup(profile)).toBe("GOLD x2");
+  });
+
+  it("lists diamond ahead of gold when the completionist capstone is earned", () => {
+    // SAMPLE_PROFILE is deliberately built to earn every achievement.
+    expect(badgeRollup(SAMPLE_PROFILE)).toBe("DIAMOND x1   GOLD x4");
   });
 });
 
