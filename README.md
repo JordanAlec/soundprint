@@ -1,6 +1,6 @@
 # SoundPrint
 
-**Demo:** [jordanalec-soundprint.vercel.app](https://jordanalec-soundprint.vercel.app)
+**Demo:** [soundprint.jordanalec.co.uk/](https://soundprint.jordanalec.co.uk/)
 
 Build a musical profile (instruments, qualifications, bands, highlights) and
 get a shareable link back. No account, no database: the profile data lives
