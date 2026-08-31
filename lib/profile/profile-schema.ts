@@ -18,7 +18,7 @@ export const musicProfileSchema = z.object({
   highlights: z.array(highlightSchema).max(HIGHLIGHT_MAX_ITEMS).optional(),
   bands: z.array(bandSchema).max(BAND_MAX_ITEMS).optional(),
   lookingForBand: z.boolean().optional(),
-  externalLink: z.url().optional(),
+  externalLink: z.httpUrl().optional(),
 });
 
 export type MusicProfile = z.infer<typeof musicProfileSchema>;

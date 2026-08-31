@@ -48,5 +48,14 @@ describe("musicProfileSchema", () => {
 
       expect(result.success).toBe(false);
     });
+
+    it("rejects a non-http(s) externalLink, e.g. javascript:", () => {
+      const result = musicProfileSchema.safeParse({
+        ...EMPTY_PROFILE,
+        externalLink: "javascript:alert(1)",
+      });
+
+      expect(result.success).toBe(false);
+    });
   });
 });
