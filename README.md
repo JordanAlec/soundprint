@@ -1,6 +1,6 @@
 # SoundPrint
 
-**Demo:** [soundprint.jordanalec.co.uk/](https://soundprint.jordanalec.co.uk/)
+**Demo:** [soundprint.jordanalec.co.uk](https://soundprint.jordanalec.co.uk)
 
 Build a musical profile (instruments, qualifications, bands, highlights) and
 get a shareable link back. No account, no database: the profile data lives
