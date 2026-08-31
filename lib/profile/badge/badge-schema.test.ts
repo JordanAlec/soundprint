@@ -195,6 +195,46 @@ describe("computeBadges", () => {
     });
   });
 
+  describe("completionist", () => {
+    function completeProfile(overrides: Partial<MusicProfile> = {}): MusicProfile {
+      return {
+        ...EMPTY_PROFILE,
+        instruments: [
+          instrument({
+            instrument: "Piano",
+            skillLevel: "Expert",
+            repertoire: repertoireOf(8, { link: "https://example.com" }),
+          }),
+          instrument({ instrument: "Bass", repertoire: repertoireOf(7) }),
+          instrument({ instrument: "Guitar", repertoire: [] }),
+          instrument({ instrument: "Drums", repertoire: [] }),
+        ],
+        qualifications: Array.from({ length: 5 }, () => ({ ...EMPTY_QUALIFICATION })),
+        highlights: ["Played a festival"],
+        bands: [{ ...EMPTY_BAND, from: "2020-01-01" }],
+        externalLink: "https://example.com",
+        ...overrides,
+      };
+    }
+
+    it("is earned once every tiered category is gold and every unlocked achievement is earned", () => {
+      expect(findTier(computeBadges(completeProfile()), "completionist")).toEqual({
+        category: "completionist",
+        tier: "diamond",
+      });
+    });
+
+    it("is not earned when one tiered category falls short of gold", () => {
+      const profile = completeProfile({ qualifications: [{ ...EMPTY_QUALIFICATION }] });
+      expect(findTier(computeBadges(profile), "completionist")).toBeUndefined();
+    });
+
+    it("is not earned when one unlocked achievement is missing", () => {
+      const profile = completeProfile({ externalLink: undefined });
+      expect(findTier(computeBadges(profile), "completionist")).toBeUndefined();
+    });
+  });
+
   it("returns multiple badges at once for a well-rounded profile", () => {
     const profile: MusicProfile = {
       ...EMPTY_PROFILE,

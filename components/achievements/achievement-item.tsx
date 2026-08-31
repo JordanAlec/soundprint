@@ -1,5 +1,5 @@
 import type { AchievementEntry } from "@/lib/profile/badge/badge-schema";
-import { paletteForTier } from "@/lib/profile/badge/badge-palette";
+import { paletteForTier, glyphForTier } from "@/lib/profile/badge/badge-palette";
 import BadgeMedal from "@/components/profile/badge/badge-medal";
 
 interface Props {
@@ -12,7 +12,7 @@ export default function AchievementItem({ entry }: Props) {
   return (
     <div className="flex items-start gap-3 border-t border-border py-3 first:border-t-0 first:pt-0">
       <span className="mt-0.5">
-        <BadgeMedal palette={palette} ribbon={Boolean(entry.tier)} size={22} />
+        <BadgeMedal palette={palette} ribbon={Boolean(entry.tier)} glyph={glyphForTier(entry.tier)} size={22} />
       </span>
 
       <div className="flex flex-1 flex-col gap-0.5">

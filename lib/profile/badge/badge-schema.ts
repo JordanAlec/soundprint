@@ -4,6 +4,12 @@ import type { SkillLevel } from "../skill/skill-schema";
 export const badgeTiers = ["bronze", "silver", "gold"] as const;
 export type BadgeTier = (typeof badgeTiers)[number];
 
+// The capstone's tier - above gold, but not one of the per-category
+// thresholds, so it's kept out of `badgeTiers`/`BadgeTier` rather than
+// forcing every Record<BadgeTier, ...> in this file to define one.
+export const capstoneTier = "diamond" as const;
+export type CapstoneTier = typeof capstoneTier;
+
 export const tieredBadgeCategories = [
   "instrumentCount",
   "skillTier",
@@ -14,6 +20,10 @@ export type TieredBadgeCategory = (typeof tieredBadgeCategories)[number];
 
 export const unlockedBadgeCategories = ["bandMember", "showcase", "allRounder", "linkedUp"] as const;
 export type UnlockedBadgeCategory = (typeof unlockedBadgeCategories)[number];
+
+// Single one-off category carrying the diamond tier - see CAPSTONE_DEFINITION for the unlock condition.
+export const capstoneBadgeCategory = "completionist" as const;
+export type CapstoneBadgeCategory = typeof capstoneBadgeCategory;
 
 export interface TierDefinition {
   tier: BadgeTier;
@@ -27,9 +37,17 @@ export interface UnlockedDefinition {
   description: string;
 }
 
+export interface CapstoneDefinition {
+  category: CapstoneBadgeCategory;
+  tier: CapstoneTier;
+  name: string;
+  description: string;
+}
+
 export type Badge =
   | { category: TieredBadgeCategory; tier: BadgeTier }
-  | { category: UnlockedBadgeCategory; kind: "unlocked" };
+  | { category: UnlockedBadgeCategory; kind: "unlocked" }
+  | { category: CapstoneBadgeCategory; tier: CapstoneTier };
 
 export const INSTRUMENT_COUNT_THRESHOLDS: Record<BadgeTier, number> = { bronze: 2, silver: 3, gold: 4 };
 export const QUALIFICATION_COUNT_THRESHOLDS: Record<BadgeTier, number> = { bronze: 1, silver: 3, gold: 5 };
@@ -87,10 +105,19 @@ export const UNLOCKED_DEFINITIONS: UnlockedDefinition[] = [
   { category: "linkedUp", name: "Linked Up", description: "Add an external profile link." },
 ];
 
+// The end goal - only earned once every tiered category has gold and every
+// unlocked achievement above is earned too.
+export const CAPSTONE_DEFINITION: CapstoneDefinition = {
+  category: capstoneBadgeCategory,
+  tier: capstoneTier,
+  name: "Completionist",
+  description: "Earn gold in every tiered category and every other achievement.",
+};
+
 export interface AchievementEntry {
   name: string;
   description: string;
-  tier?: BadgeTier;
+  tier?: BadgeTier | CapstoneTier;
 }
 
 export interface AchievementGroup {
@@ -117,7 +144,18 @@ export function achievementGroups(): AchievementGroup[] {
     })),
   };
 
-  return [...tieredGroups, unlockedGroup];
+  const capstoneGroup: AchievementGroup = {
+    heading: "The end goal",
+    entries: [
+      {
+        name: CAPSTONE_DEFINITION.name,
+        description: CAPSTONE_DEFINITION.description,
+        tier: CAPSTONE_DEFINITION.tier,
+      },
+    ],
+  };
+
+  return [...tieredGroups, unlockedGroup, capstoneGroup];
 }
 
 function highestTier(value: number, thresholds: Record<BadgeTier, number>): BadgeTier | undefined {
@@ -179,6 +217,16 @@ export function computeBadges(profile: MusicProfile): Badge[] {
 
   if (profile.externalLink) {
     badges.push({ category: "linkedUp", kind: "unlocked" });
+  }
+
+  const hasGoldInEveryTier = tieredBadgeCategories.every((category) =>
+    badges.some((badge) => "tier" in badge && badge.category === category && badge.tier === "gold"),
+  );
+  const hasEveryUnlocked = unlockedBadgeCategories.every((category) =>
+    badges.some((badge) => "kind" in badge && badge.kind === "unlocked" && badge.category === category),
+  );
+  if (hasGoldInEveryTier && hasEveryUnlocked) {
+    badges.push({ category: capstoneBadgeCategory, tier: capstoneTier });
   }
 
   return badges;

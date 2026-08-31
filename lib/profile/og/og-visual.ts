@@ -1,6 +1,6 @@
 import type { MusicProfile } from "@/lib/profile/profile-schema";
 import type { ProfileTheme } from "@/lib/profile/theme/theme-schema";
-import { computeBadges, type BadgeTier } from "@/lib/profile/badge/badge-schema";
+import { computeBadges, type BadgeTier, type CapstoneTier } from "@/lib/profile/badge/badge-schema";
 
 export interface OgPalette {
   canvas: string;
@@ -42,13 +42,13 @@ export const THEME_PALETTE: Record<ProfileTheme, OgPalette> = {
 
 // Full badge icons are unreadable at this size, so collapse to "GOLD x2   SILVER x1".
 export function badgeRollup(profile: MusicProfile): string {
-  const tierCounts: Record<BadgeTier, number> = { gold: 0, silver: 0, bronze: 0 };
+  const tierCounts: Record<BadgeTier | CapstoneTier, number> = { diamond: 0, gold: 0, silver: 0, bronze: 0 };
   for (const badge of computeBadges(profile)) {
     if ("tier" in badge) {
       tierCounts[badge.tier] += 1;
     }
   }
-  return (["gold", "silver", "bronze"] as const)
+  return (["diamond", "gold", "silver", "bronze"] as const)
     .filter((tier) => tierCounts[tier] > 0)
     .map((tier) => `${tier.toUpperCase()} x${tierCounts[tier]}`)
     .join("   ");

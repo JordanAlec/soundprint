@@ -1,5 +1,5 @@
-import { BADGE_DEFINITIONS, UNLOCKED_DEFINITIONS, type Badge } from "@/lib/profile/badge/badge-schema";
-import { paletteForTier } from "@/lib/profile/badge/badge-palette";
+import { BADGE_DEFINITIONS, UNLOCKED_DEFINITIONS, CAPSTONE_DEFINITION, type Badge } from "@/lib/profile/badge/badge-schema";
+import { paletteForTier, glyphForTier } from "@/lib/profile/badge/badge-palette";
 import BadgeMedal from "./badge-medal";
 
 interface Props {
@@ -8,6 +8,9 @@ interface Props {
 
 function definitionFor(badge: Badge) {
   if ("tier" in badge) {
+    if (badge.tier === "diamond") {
+      return CAPSTONE_DEFINITION;
+    }
     return BADGE_DEFINITIONS[badge.category].find((definition) => definition.tier === badge.tier)!;
   }
   return UNLOCKED_DEFINITIONS.find((definition) => definition.category === badge.category)!;
@@ -15,16 +18,17 @@ function definitionFor(badge: Badge) {
 
 export default function BadgeIcon({ badge }: Props) {
   const definition = definitionFor(badge);
-  const palette = paletteForTier("tier" in badge ? badge.tier : undefined);
+  const tier = "tier" in badge ? badge.tier : undefined;
+  const palette = paletteForTier(tier);
   // Tier as text too, not color alone - bronze/gold aren't always distinguishable by hue.
-  const tierLabel = "tier" in badge ? ` · ${badge.tier}` : "";
+  const tierLabel = tier ? ` · ${tier}` : "";
 
   return (
     <li
       className="flex items-center gap-2 rounded-sm border border-border px-2.5 py-1.5"
       title={definition.description}
     >
-      <BadgeMedal palette={palette} ribbon={"tier" in badge} size={20} />
+      <BadgeMedal palette={palette} ribbon={Boolean(tier)} glyph={glyphForTier(tier)} size={20} />
       <span className="font-mono text-[11px] uppercase tracking-widest text-ink">
         {definition.name}
         {tierLabel}
