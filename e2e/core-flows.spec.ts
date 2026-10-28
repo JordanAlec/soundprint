@@ -16,7 +16,7 @@ test("sample profile loads and decodes from the home page", async ({ page }) => 
 
   await expect(page).toHaveURL(/\/profile\//);
   await expect(page.getByText("Decode failed")).toHaveCount(0);
-  await expect(page.getByText("Jordan Alec", { exact: true })).toBeVisible();
+  await expect(page.getByText("The Amazing Virtuoso", { exact: true })).toBeVisible();
 });
 
 test("forum signature banner is hidden by default and toggles open", async ({ page }) => {
