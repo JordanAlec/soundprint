@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ProfileForm from "./profile-form";
 import ShareableLink from "./shareable-link";
 import { encodeProfileToken } from "@/lib/profile/token";
@@ -11,11 +11,12 @@ export default function CreateProfile() {
   const [path, setPath] = useState<string | null>(null);
   const { setTheme } = useThemePreview();
 
-  function clearThemePreview() {
-    setTheme(EMPTY_PROFILE.theme);
-  }
+  const clearThemePreview = useCallback(
+    () => setTheme(EMPTY_PROFILE.theme),
+    [setTheme],
+  );
 
-  useEffect(() => clearThemePreview, [setTheme]);
+  useEffect(() => clearThemePreview, [clearThemePreview]);
 
   async function handleSubmit(profile: MusicProfile) {
     const token = await encodeProfileToken(profile);
